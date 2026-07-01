@@ -73,6 +73,16 @@ export {
 export { AUDIT_EVENT_SCHEMA_VERSION, formatAuditEvent, makeAuditEvent } from "./audit.js";
 
 export {
+  ARTIFACT_GENERATORS,
+  MANIFEST_VERSION,
+  artifactFilename,
+  buildManifest,
+  generateClaimSummaryHtml,
+  makeManifestEntry,
+  verifyArtifacts
+} from "./artifacts.js";
+
+export {
   findTopicForFinding,
   findTopicForState,
   getHelpTopic,

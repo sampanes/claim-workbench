@@ -56,8 +56,11 @@ test("runs persist and resume identically after a restart", async () => {
   const { csvText, mapping, recipe } = await fixtures();
   const dir = await mkdtemp(join(tmpdir(), "claim-workbench-"));
   const dbPath = join(dir, "workbench.db");
+  const artifactDir = join(dir, "artifacts");
   try {
-    const service = makeService(recipe, dbPath);
+    const service = new ClaimService({
+      dbPath, artifactDir, recipes: [recipe], clock: FIXED_CLOCK, idFactory: createSequentialIdFactory()
+    });
     const { packets } = service.importCsv({ csvText, mapping, sourceName: "first.csv" });
     const { run } = service.startRun({ packetId: packets[0].id });
     service.act({ runId: run.id, action: "validate_packet" });
@@ -67,7 +70,7 @@ test("runs persist and resume identically after a restart", async () => {
     service.close();
 
     // Restart: a brand-new service instance over the same database.
-    const restarted = new ClaimService({ dbPath, recipes: [recipe], clock: FIXED_CLOCK });
+    const restarted = new ClaimService({ dbPath, artifactDir, recipes: [recipe], clock: FIXED_CLOCK });
     const after = restarted.getRunForPacket({ packetId: packets[0].id });
     assert.deepEqual(after, before);
     assert.equal(after.state, "ArtifactsGenerated");

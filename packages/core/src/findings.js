@@ -52,6 +52,14 @@ defineFinding("IMPORT_EMPTY", SEVERITIES.HARD_STOP, "finding.import_empty",
 defineFinding("IMPORT_ROW_INVALID", SEVERITIES.HARD_STOP, "finding.import_row_invalid",
   "A source row could not be normalized into a service line.");
 
+// Artifacts (Milestone 4)
+defineFinding("ARTIFACT_MISSING", SEVERITIES.HARD_STOP, "finding.artifact_missing",
+  "A required artifact does not exist.");
+defineFinding("ARTIFACT_STALE", SEVERITIES.HARD_STOP, "finding.artifact_stale",
+  "An artifact was generated before the current packet facts and must be regenerated.");
+defineFinding("ARTIFACT_TAMPERED", SEVERITIES.HARD_STOP, "finding.artifact_tampered",
+  "An artifact no longer matches its recorded hash.");
+
 // Recipes (Milestone 3)
 defineFinding("RECIPE_SCHEMA_UNSUPPORTED", SEVERITIES.HARD_STOP, "finding.recipe_invalid",
   "The recipe uses a schema version this application does not support.");

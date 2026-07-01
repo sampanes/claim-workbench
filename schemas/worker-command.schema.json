@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claim-workbench.dev/schemas/worker-command.schema.json",
+  "title": "WorkerCommand",
+  "description": "A named, versioned command from the application to the browser worker. The worker resolves packet facts through its controlled boundary; commands never carry unrelated packet data.",
+  "type": "object",
+  "required": ["protocolVersion", "commandId", "runId", "packetId", "recipeId", "stepId", "action", "mode"],
+  "properties": {
+    "protocolVersion": { "const": "1" },
+    "commandId": { "type": "string", "pattern": "^cmd_" },
+    "runId": { "type": "string", "pattern": "^run_" },
+    "packetId": { "type": "string", "pattern": "^packet_" },
+    "recipeId": { "type": "string", "minLength": 1 },
+    "stepId": { "type": "string", "minLength": 1 },
+    "action": {
+      "enum": ["readPage", "showTarget", "matchRecord", "fillServiceRows", "verifyTotal", "uploadArtifact", "undoFill", "submit", "captureReceipt"]
+    },
+    "mode": {
+      "enum": ["Observe", "Guide", "Prefill", "RunReversibleSteps", "StopBeforeSubmit", "SubmitWithExplicitApproval"]
+    },
+    "approvalToken": {
+      "oneOf": [{ "type": "null" }, { "$ref": "approval-token.schema.json" }]
+    },
+    "input": { "type": "object" }
+  }
+}

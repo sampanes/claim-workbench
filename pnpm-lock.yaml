@@ -14,6 +14,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/core
 
+  packages/browser-worker:
+    dependencies:
+      '@claim-workbench/core':
+        specifier: workspace:*
+        version: link:../core
+
   packages/core: {}
 
   packages/service:

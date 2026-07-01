@@ -1,0 +1,13 @@
+{
+  "name": "@claim-workbench/browser-worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/worker.js",
+  "bin": { "claim-worker": "bin/worker.js" },
+  "scripts": {
+    "build": "node scripts/check-sources.mjs",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": { "@claim-workbench/core": "workspace:*" }
+}

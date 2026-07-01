@@ -73,6 +73,14 @@ export {
 export { AUDIT_EVENT_SCHEMA_VERSION, formatAuditEvent, makeAuditEvent } from "./audit.js";
 
 export {
+  RESULT_STATUSES,
+  WORKER_COMMANDS,
+  WORKER_PROTOCOL_VERSION,
+  makeWorkerResult,
+  validateWorkerCommand
+} from "./protocol.js";
+
+export {
   ARTIFACT_GENERATORS,
   MANIFEST_VERSION,
   artifactFilename,

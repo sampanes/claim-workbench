@@ -7,16 +7,22 @@
   "destination": {
     "classification": {
       "claim-form": {
-        "urlPattern": "/portal/claim",
-        "titlePattern": "Synthetic EAP Portal",
-        "requiredText": ["Prepare claim", "Service rows"],
-        "requiredControls": ["memberId", "serviceDate1", "amount1"]
+        "urlPattern": "/portal/claim(\\?|$)",
+        "titlePattern": "^Synthetic EAP Portal$",
+        "requiredText": ["Prepare claim", "Service rows", "Running total"],
+        "requiredControls": ["memberId", "serviceDate", "code", "amount", "portalTotal"]
+      },
+      "review": {
+        "urlPattern": "/portal/claim/review",
+        "titlePattern": "^Synthetic EAP Portal$",
+        "requiredText": ["Review claim", "I reviewed this claim"],
+        "requiredControls": ["memberId", "confirm", "submitClaim", "portalTotal"]
       },
       "receipt": {
         "urlPattern": "/portal/receipt",
-        "titlePattern": "Synthetic EAP Portal",
+        "titlePattern": "^Synthetic EAP Portal$",
         "requiredText": ["Submission receipt", "Confirmation number"],
-        "requiredControls": []
+        "requiredControls": ["confirmationNumber", "memberId", "portalTotal"]
       }
     }
   },

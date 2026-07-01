@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claim-workbench.dev/schemas/worker-result.schema.json",
+  "title": "WorkerResult",
+  "description": "Structured result of one worker command. Success is defined by expected evidence, not by the absence of a browser error.",
+  "type": "object",
+  "required": ["protocolVersion", "commandId", "status", "summary", "evidence", "findings"],
+  "properties": {
+    "protocolVersion": { "const": "1" },
+    "commandId": { "type": ["string", "null"] },
+    "status": { "enum": ["succeeded", "needs_approval", "blocked", "manual_required", "failed", "cancelled"] },
+    "stepId": { "type": ["string", "null"] },
+    "summary": { "type": "string", "minLength": 1 },
+    "evidence": { "type": "object" },
+    "findings": { "type": "array", "items": { "$ref": "finding.schema.json" } },
+    "artifacts": { "type": "array" },
+    "nextActions": { "type": "array", "items": { "type": "string" } },
+    "diagnostics": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "description": "Present only in explicit diagnostic mode (ADR-0005).",
+          "properties": {
+            "url": { "type": ["string", "null"] },
+            "htmlSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "html": { "type": "string" },
+            "capturedAt": { "type": "string" }
+          }
+        }
+      ]
+    }
+  }
+}

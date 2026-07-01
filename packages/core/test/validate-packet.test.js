@@ -118,7 +118,11 @@ test("every registered finding code has a resolvable help topic", () => {
     assert.ok(topic, `finding ${code} points at missing help topic ${definition.helpTopicId}`);
     const applied = findTopicForFinding(code);
     // A few codes intentionally share a topic with a sibling code.
-    const sharesTopic = ["INVALID_CURRENCY", "RECIPE_SCHEMA_UNSUPPORTED", "RECIPE_GATE_MISSING"];
+    const sharesTopic = [
+      "INVALID_CURRENCY", "RECIPE_SCHEMA_UNSUPPORTED", "RECIPE_GATE_MISSING",
+      "APPROVAL_EXPIRED", "APPROVAL_EVIDENCE_MISMATCH", "APPROVAL_SCOPE_MISMATCH",
+      "APPROVAL_BAD_SIGNATURE", "APPROVAL_ALREADY_USED"
+    ];
     if (!sharesTopic.includes(code)) {
       assert.ok(applied, `no topic appliesWhen.findingCode for ${code}`);
     }

@@ -12,6 +12,7 @@ Deliver:
 - Windows, Linux, and macOS CI
 - bootstrap and verification commands
 - one trivial test in each selected runtime
+- deterministic help-topic rendering without a model
 
 Acceptance:
 
@@ -71,6 +72,7 @@ Deliver:
 - notice, warning, and hard-stop findings
 - auditable workflow state machine
 - persistence and resume behavior
+- assistance metadata for fields, findings, actions, and states
 
 Acceptance:
 
@@ -80,7 +82,8 @@ packet + recipe -> available actions and findings -> restart -> same run state
 
 Tests prove invalid transitions are rejected, hard stops cannot be overridden,
 permitted warnings require a recorded override, and completed steps resume
-correctly.
+correctly. Contextual help resolves by stable topic ID without requiring a
+model.
 
 ## Milestone 4: Artifact Pipeline
 
@@ -149,6 +152,7 @@ Deliver:
 - explicit synthetic submit action
 - receipt capture, hashing, and packet association
 - human-readable and technical audit records
+- compact redacted assistance context envelopes
 
 Acceptance:
 
@@ -158,7 +162,8 @@ validated portal state -> explicit approval -> synthetic submit -> verified rece
 
 Tests prove submission fails without approval, stale approval cannot be reused,
 changed evidence invalidates approval, duplicate submission is rejected, and a
-required missing receipt prevents completion.
+required missing receipt prevents completion. Assistance tests prove a model
+cannot expose unavailable actions or reinterpret approval state.
 
 This is the first complete proof:
 
@@ -196,6 +201,7 @@ Deliver:
 - recipe authoring validation
 - compatibility test kit
 - extension development guide
+- assistance-topic compatibility checks
 
 Acceptance:
 
@@ -204,7 +210,7 @@ new example adapter -> compatibility suite -> visible in the native workbench
 ```
 
 Tests prove an adapter cannot bypass packet validation, approval gates, audit
-events, destination allowlists, or receipt requirements.
+events, destination allowlists, receipt requirements, or assistance metadata.
 
 ## Release Gate
 
@@ -215,4 +221,5 @@ The first tagged preview requires:
 - documented threat model and data-retention defaults
 - dependency and secret scanning
 - tested backup, export, and local-data deletion behavior
+- passing no-model assistance and small-model grounding evaluations
 - signed release artifacts treated separately from normal development builds

@@ -3,16 +3,22 @@
 // drive the same typed operations (ADR-0002).
 
 import {
+  ARTIFACT_GENERATORS,
   applyAction,
+  artifactFilename,
+  buildManifest,
   createRun,
   detectDuplicates,
   evaluateRun,
   importCsv,
+  makeManifestEntry,
   newId,
   serviceLedgerFromPackets,
   validateRecipe,
+  verifyArtifacts,
   WorkflowError
 } from "@claim-workbench/core";
+import { DiskArtifactStore, MemoryArtifactStore } from "./artifact-store.js";
 import { Store } from "./store.js";
 
 export class ServiceError extends Error {
@@ -24,8 +30,9 @@ export class ServiceError extends Error {
 }
 
 export class ClaimService {
-  constructor({ dbPath = ":memory:", recipes = [], clock = Date, idFactory } = {}) {
+  constructor({ dbPath = ":memory:", artifactDir = null, recipes = [], clock = Date, idFactory } = {}) {
     this.store = new Store(dbPath);
+    this.artifacts = artifactDir ? new DiskArtifactStore(artifactDir) : new MemoryArtifactStore();
     this.clock = clock;
     this.idFactory = idFactory ?? newId;
     this.recipes = new Map();
@@ -140,23 +147,80 @@ export class ClaimService {
     return run;
   }
 
+  // Artifact verification findings for a packet that has a manifest.
+  // Included in every evaluation so missing, stale, or tampered documents
+  // block the workflow until regeneration.
+  #artifactFindings(packet, recipe) {
+    const manifest = packet.artifacts;
+    if (!manifest || !Array.isArray(manifest.entries)) return [];
+    const files = new Map();
+    for (const entry of manifest.entries) {
+      files.set(entry.filename, this.artifacts.read(entry.filename));
+    }
+    return verifyArtifacts({ packet, recipe, manifest, files });
+  }
+
+  // Generate every artifact the recipe requires, write the files, and
+  // return the manifest. Content is deterministic; the manifest carries
+  // the generation time and the packet fingerprint for freshness checks.
+  #generateArtifacts(packet, recipe) {
+    const generatedAt = new Date(this.clock.now()).toISOString();
+    const entries = [];
+    for (const required of recipe.requiredArtifacts ?? []) {
+      const generator = ARTIFACT_GENERATORS[required.kind];
+      if (!generator) {
+        throw new ServiceError("ARTIFACT_GENERATOR_UNKNOWN",
+          `No generator registered for artifact kind ${JSON.stringify(required.kind)}.`);
+      }
+      const content = generator.generate(packet);
+      const filename = artifactFilename(packet, required.kind, generator.extension);
+      this.artifacts.write(filename, content);
+      entries.push(makeManifestEntry({
+        artifactId: this.idFactory("artifact"),
+        kind: required.kind,
+        filename,
+        mediaType: generator.mediaType,
+        content,
+        generatedAt
+      }));
+    }
+    return buildManifest({ packet, entries, generatedAt });
+  }
+
   evaluate({ runId, extraFindings = [] }) {
     const run = this.#run(runId);
     const packet = this.#packet(run.packetId);
     const recipe = this.#recipeFor(run.recipeId);
-    return evaluateRun({ packet, recipe, run, extraFindings });
+    return evaluateRun({
+      packet, recipe, run,
+      extraFindings: [...this.#artifactFindings(packet, recipe), ...extraFindings]
+    });
   }
 
   act({ runId, action, payload = {}, actor = "operator", extraFindings = [] }) {
     const run = this.#run(runId);
     const packet = this.#packet(run.packetId);
     const recipe = this.#recipeFor(run.recipeId);
+
+    let manifest = null;
+    let combinedPayload = payload;
+    if (action === "generate_artifacts") {
+      manifest = this.#generateArtifacts(packet, recipe);
+      packet.artifacts = manifest;
+      combinedPayload = {
+        ...payload,
+        evidence: manifest.entries.map(({ kind, filename, sha256 }) => ({ kind, filename, sha256 }))
+      };
+    }
+
+    const allFindings = [...this.#artifactFindings(packet, recipe), ...extraFindings];
     const { run: nextRun, events } = applyAction({
-      packet, recipe, run, action, payload, actor, extraFindings,
+      packet, recipe, run, action, payload: combinedPayload, actor,
+      extraFindings: allFindings,
       clock: this.clock, idFactory: this.idFactory
     });
     this.store.putRun(nextRun);
-    if (nextRun.state !== packet.workflowState) {
+    if (manifest !== null || nextRun.state !== packet.workflowState) {
       packet.workflowState = nextRun.state;
       this.store.putPacket(packet);
     }
@@ -164,7 +228,10 @@ export class ClaimService {
     return {
       run: nextRun,
       events,
-      evaluation: evaluateRun({ packet, recipe, run: nextRun, extraFindings })
+      evaluation: evaluateRun({
+        packet, recipe, run: nextRun,
+        extraFindings: [...this.#artifactFindings(packet, recipe), ...extraFindings]
+      })
     };
   }
 

@@ -449,6 +449,46 @@ export const helpTopics = [
     related: ["action.compare_totals"]
   },
 
+  {
+    id: "finding.artifact_missing",
+    title: "A required document is missing",
+    summary: "A document this workflow requires does not exist or was never generated.",
+    appliesWhen: { findingCode: "ARTIFACT_MISSING" },
+    explanation: [
+      "Documents are generated from packet facts; regenerate instead of hunting for the file.",
+      "The workflow stays blocked until every required document exists and verifies."
+    ],
+    allowedActions: ["generate_artifacts", "mark_manual"],
+    neverSuggest: ["upload_unverified_file", "submit"],
+    related: ["finding.artifact_stale"]
+  },
+  {
+    id: "finding.artifact_stale",
+    title: "A document is out of date",
+    summary: "Packet facts changed after this document was generated, so it no longer reflects the claim.",
+    appliesWhen: { findingCode: "ARTIFACT_STALE" },
+    explanation: [
+      "A document can exist and still be invalid when it predates the services it describes.",
+      "Regenerate the artifacts; the manifest will record the new hashes."
+    ],
+    allowedActions: ["generate_artifacts", "mark_manual"],
+    neverSuggest: ["upload_unverified_file", "edit_artifact_by_hand"],
+    related: ["finding.artifact_tampered"]
+  },
+  {
+    id: "finding.artifact_tampered",
+    title: "A document changed outside the workflow",
+    summary: "The file on disk no longer matches the hash recorded when it was generated.",
+    appliesWhen: { findingCode: "ARTIFACT_TAMPERED" },
+    explanation: [
+      "Someone or something modified the file after generation.",
+      "Regenerate the artifacts and investigate how the file changed."
+    ],
+    allowedActions: ["generate_artifacts", "mark_manual"],
+    neverSuggest: ["upload_unverified_file", "ignore_hard_stop"],
+    related: ["finding.artifact_stale"]
+  },
+
   // ---- Fields and artifacts ------------------------------------------------
   {
     id: "field.member_id",

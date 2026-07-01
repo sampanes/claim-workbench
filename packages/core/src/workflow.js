@@ -113,6 +113,14 @@ function nextRecipeStep(recipe, run) {
   return recipe.steps.find((step) => !completed.has(step.id)) ?? null;
 }
 
+// A finding blocks an action unless the finding names that action as the
+// one that resolves it (for example, stale artifacts do not block
+// regeneration). Deterministic validation is never blocked.
+function findingBlocksAction(finding, actionId) {
+  if (actionId === "validate_packet") return false;
+  return finding.data?.resolvedBy !== actionId;
+}
+
 // Deterministically evaluate what the workflow currently is and permits.
 export function evaluateRun({ packet, recipe, run, extraFindings = [] }) {
   const { findings, blocking } = collectFindings({ packet, recipe, run, extraFindings });
@@ -122,15 +130,16 @@ export function evaluateRun({ packet, recipe, run, extraFindings = [] }) {
 
   const availableActions = [];
   if (!terminal) {
+    const completedActions = new Set(run.completedSteps.map((step) => step.action));
     for (const [actionId] of Object.entries(stateActions)) {
       const action = getAction(actionId);
       // Progress and evidence actions are blocked while blocking findings
-      // exist. Deterministic re-checks (validate_packet) stay available.
-      if (blocking.length > 0 && actionId !== "validate_packet") continue;
-      // The recipe orders procedure: a state-changing action must also be
-      // the next uncompleted recipe step when the recipe includes it.
+      // exist, unless a finding names this action as its resolution.
+      if (blocking.some((finding) => findingBlocksAction(finding, actionId))) continue;
+      // The recipe orders procedure: an action the recipe includes must be
+      // the next uncompleted step, or an already-completed step re-running.
       const isRecipeStepAction = recipe.steps.some((step) => step.action === actionId);
-      if (isRecipeStepAction && nextStep && nextStep.action !== actionId) continue;
+      if (isRecipeStepAction && !completedActions.has(actionId) && nextStep && nextStep.action !== actionId) continue;
       availableActions.push(action);
     }
     for (const actionId of UNIVERSAL_ACTIONS) {
@@ -230,13 +239,14 @@ export function applyAction({ packet, recipe, run, action, payload = {}, extraFi
   }
 
   const { blocking } = collectFindings({ packet, recipe, run, extraFindings });
-  if (blocking.length > 0 && action !== "validate_packet") {
-    const hard = blocking.some((finding) => finding.severity === SEVERITIES.HARD_STOP);
+  const applicableBlocking = blocking.filter((finding) => findingBlocksAction(finding, action));
+  if (applicableBlocking.length > 0) {
+    const hard = applicableBlocking.some((finding) => finding.severity === SEVERITIES.HARD_STOP);
     throw new WorkflowError(
       hard ? "BLOCKED_BY_HARD_STOP" : "OVERRIDE_REQUIRED",
       hard
-        ? `${blocking.length} blocking finding(s) prevent ${action}. Hard stops cannot be overridden.`
-        : `${blocking.length} warning finding(s) require a recorded override before ${action}.`
+        ? `${applicableBlocking.length} blocking finding(s) prevent ${action}. Hard stops cannot be overridden.`
+        : `${applicableBlocking.length} warning finding(s) require a recorded override before ${action}.`
     );
   }
 
@@ -253,10 +263,14 @@ export function applyAction({ packet, recipe, run, action, payload = {}, extraFi
     return { run: next, events };
   }
 
-  // The recipe orders the procedure for actions it includes.
+  // The recipe orders the procedure for actions it includes. A step that
+  // already completed may re-execute idempotently (for example artifact
+  // regeneration) without being recorded twice.
   const nextStep = nextRecipeStep(recipe, run);
-  const isRecipeStepAction = recipe.steps.some((step) => step.action === action);
-  if (isRecipeStepAction) {
+  const recipeStep = recipe.steps.find((step) => step.action === action) ?? null;
+  const alreadyCompleted = recipeStep !== null &&
+    run.completedSteps.some((step) => step.stepId === recipeStep.id);
+  if (recipeStep && !alreadyCompleted) {
     if (!nextStep || nextStep.action !== action) {
       throw new WorkflowError("TRANSITION_INVALID",
         `Action ${action} is out of order. The next recipe step is ${nextStep ? `${nextStep.id} (${nextStep.action})` : "already complete"}.`);
@@ -279,6 +293,9 @@ export function applyAction({ packet, recipe, run, action, payload = {}, extraFi
       commandId: payload.commandId ?? null,
       evidenceDigest: payload.evidenceDigest ?? null
     });
+  } else if (recipeStep && alreadyCompleted && recipeStep.minimumMode && !modeAtLeast(run.mode, recipeStep.minimumMode)) {
+    throw new WorkflowError("MODE_NOT_ALLOWED",
+      `Step ${recipeStep.id} requires assistance mode ${recipeStep.minimumMode} or higher; current mode is ${run.mode}.`);
   }
 
   // Undoing filled rows also un-completes every step the undo invalidates,

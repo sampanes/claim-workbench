@@ -54,6 +54,24 @@ export {
 } from "./import.js";
 export { detectDuplicates, serviceLedgerFromPackets } from "./duplicates.js";
 
+export { ACTIONS, ASSISTANCE_MODES, getAction, isKnownAction, listActions, modeAtLeast } from "./actions.js";
+export {
+  RECIPE_SCHEMA_VERSION,
+  evaluateRequiredFields,
+  getPacketPath,
+  parseRecipe,
+  validateRecipe
+} from "./recipe.js";
+export {
+  RUN_SCHEMA_VERSION,
+  WorkflowError,
+  applyAction,
+  collectFindings,
+  createRun,
+  evaluateRun
+} from "./workflow.js";
+export { AUDIT_EVENT_SCHEMA_VERSION, formatAuditEvent, makeAuditEvent } from "./audit.js";
+
 export {
   findTopicForFinding,
   findTopicForState,

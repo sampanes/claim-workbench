@@ -8,7 +8,7 @@ export const syntheticPacket = {
   client: {
     id: "client_synthetic_001",
     displayName: "Taylor Example",
-    externalIds: { memberId: "SYN-000123" }
+    externalIds: { sourceClientId: "SYN-000123", memberId: "SYN-000123" }
   },
   destination: {
     id: "synthetic-eap-portal",

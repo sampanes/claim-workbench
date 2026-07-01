@@ -1,0 +1,68 @@
+{
+  "recipeVersion": "1",
+  "id": "synthetic-eap-monthly",
+  "revision": "1",
+  "title": "Synthetic EAP monthly claims",
+  "destinationId": "synthetic-eap-portal",
+  "destination": {
+    "classification": {
+      "claim-form": {
+        "urlPattern": "/portal/claim",
+        "titlePattern": "Synthetic EAP Portal",
+        "requiredText": ["Prepare claim", "Service rows"],
+        "requiredControls": ["memberId", "serviceDate1", "amount1"]
+      },
+      "receipt": {
+        "urlPattern": "/portal/receipt",
+        "titlePattern": "Synthetic EAP Portal",
+        "requiredText": ["Submission receipt", "Confirmation number"],
+        "requiredControls": []
+      }
+    }
+  },
+  "requiredFields": [
+    {
+      "path": "client.externalIds.sourceClientId",
+      "label": "Member ID",
+      "helpTopicId": "field.member_id"
+    },
+    {
+      "path": "client.displayName",
+      "label": "Member name",
+      "helpTopicId": "field.member_name"
+    }
+  ],
+  "requiredArtifacts": [
+    {
+      "kind": "claim-summary",
+      "label": "Claim summary document",
+      "helpTopicId": "artifact.claim_summary"
+    }
+  ],
+  "allowedModes": [
+    "Observe",
+    "Guide",
+    "Prefill",
+    "RunReversibleSteps",
+    "StopBeforeSubmit",
+    "SubmitWithExplicitApproval"
+  ],
+  "overridableWarnings": [
+    "SERVICE_DATE_OUT_OF_PERIOD",
+    "DUPLICATE_SERVICE",
+    "NEAR_DUPLICATE_SERVICE",
+    "MISSING_PROVENANCE"
+  ],
+  "steps": [
+    { "id": "validate-packet", "label": "Validate packet", "action": "validate_packet", "helpTopicId": "action.validate_packet" },
+    { "id": "generate-artifacts", "label": "Generate claim summary", "action": "generate_artifacts", "helpTopicId": "action.generate_artifacts" },
+    { "id": "open-destination", "label": "Open the synthetic portal", "action": "open_destination", "helpTopicId": "action.open_destination" },
+    { "id": "match-record", "label": "Match the member record", "action": "match_record", "helpTopicId": "action.match_record" },
+    { "id": "fill-service-rows", "label": "Fill service rows", "action": "fill_service_rows", "minimumMode": "RunReversibleSteps", "helpTopicId": "action.fill_service_rows" },
+    { "id": "verify-total", "label": "Compare totals", "action": "compare_totals", "helpTopicId": "action.compare_totals" },
+    { "id": "review", "label": "Review the filled form", "action": "user_review", "helpTopicId": "action.user_review" },
+    { "id": "submit", "label": "Submit the claim", "action": "submit", "irreversible": true, "approvalGate": true, "minimumMode": "SubmitWithExplicitApproval", "helpTopicId": "action.submit" },
+    { "id": "capture-receipt", "label": "Capture the receipt", "action": "capture_receipt", "helpTopicId": "action.capture_receipt" },
+    { "id": "complete", "label": "Complete the packet", "action": "complete", "helpTopicId": "action.complete" }
+  ]
+}

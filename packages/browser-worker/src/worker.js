@@ -13,7 +13,11 @@ import {
   WORKER_COMMANDS
 } from "@claim-workbench/core";
 import { classifyPage } from "./classify.js";
-import { controlByName } from "./page-model.js";
+import { controlByName, observedRows } from "./page-model.js";
+
+function rowSignature(row) {
+  return `${row.serviceDate}|${row.code}|${row.units ?? 1}|${row.amount}`;
+}
 
 // The page each command must be looking at before it may run. Commands not
 // listed observe whatever page is current.
@@ -36,6 +40,9 @@ export class BrowserWorker {
   #paused = false;
   #stopped = false;
   #resultsByCommandId = new Map();
+  // Row signatures this worker added, so undo removes exactly what this
+  // session filled and nothing an operator entered by hand.
+  #addedRowSignatures = new Map();
 
   constructor({ driver, recipe, facts, diagnosticMode = false, clock = Date }) {
     this.#driver = driver;
@@ -225,9 +232,208 @@ export class BrowserWorker {
     return this.#dispatchMutating(command, page, classification);
   }
 
-  // Reversible and irreversible commands land in later milestones; keeping
-  // the seam explicit makes the boundary auditable.
-  async #dispatchMutating(command) {
+  #fillEvidence(expectedRows) {
+    const page = this.#driver.currentPage();
+    const observed = observedRows(page);
+    const observedSignatures = observed.map(rowSignature);
+    const rows = expectedRows.map((row) => ({
+      lineId: row.lineId,
+      expected: rowSignature(row),
+      observed: observedSignatures.includes(rowSignature(row))
+    }));
+    return {
+      serviceRowsExpected: expectedRows.length,
+      serviceRowsObserved: observed.length,
+      rows,
+      expectedTotal: this.#facts.expectedTotal,
+      observedTotal: controlByName(page, "portalTotal")?.value ?? null
+    };
+  }
+
+  #addFormFields(page, action) {
+    const form = page.forms.find((candidate) => candidate.action === action);
+    return form ? { ...form.fields } : null;
+  }
+
+  // Reversible commands (Milestone 6). Every mutation is observed-first:
+  // rows that already exist are never added twice, and the result compares
+  // expected against observed values instead of trusting the post.
+  async #dispatchMutating(command, page, classification) {
+    const input = command.input ?? {};
+
+    if (command.action === "fillServiceRows") {
+      const wanted = input.serviceLineIds ?? this.#facts.serviceRows.map((row) => row.lineId);
+      const expectedRows = [];
+      for (const lineId of wanted) {
+        const row = this.#facts.serviceRows.find((candidate) => candidate.lineId === lineId);
+        if (!row) {
+          return this.#result(command, "failed", `The packet has no service line ${JSON.stringify(lineId)}.`, {
+            evidence: { unknownLineId: lineId }
+          });
+        }
+        expectedRows.push(row);
+      }
+
+      const baseFields = this.#addFormFields(page, "/portal/claim/add");
+      if (!baseFields) {
+        return this.#result(command, "failed", "The claim form has no add-row form to fill.", {
+          findings: [makeFinding("TARGET_NOT_FOUND", { data: { target: "add-row form" } })]
+        });
+      }
+
+      let added = 0;
+      for (const row of expectedRows) {
+        if (this.#stopped) {
+          return this.#result(command, "cancelled",
+            `Emergency stop interrupted the fill after ${added} row(s).`, {
+              evidence: this.#fillEvidence(expectedRows),
+              findings: [makeFinding("WORKER_STOPPED")]
+            });
+        }
+        const current = observedRows(this.#driver.currentPage()).map(rowSignature);
+        const signature = rowSignature(row);
+        // Observed-first idempotency: an identical row on the page is
+        // evidence of prior work, not something to repeat.
+        if (current.includes(signature)) continue;
+        await this.#driver.submitForm("/portal/claim/add", {
+          ...baseFields,
+          serviceDate: row.serviceDate,
+          code: row.code,
+          units: String(row.units ?? 1),
+          amount: row.amount
+        });
+        if (this.#driver.currentStatus() >= 400) {
+          return this.#result(command, "failed",
+            `The destination rejected row ${row.lineId} (${signature}).`, {
+              evidence: this.#fillEvidence(expectedRows)
+            });
+        }
+        this.#addedRowSignatures.set(signature, (this.#addedRowSignatures.get(signature) ?? 0) + 1);
+        added += 1;
+      }
+
+      const evidence = this.#fillEvidence(expectedRows);
+      const allObserved = evidence.rows.every((row) => row.observed);
+      const totalsMatch = evidence.observedTotal === evidence.expectedTotal &&
+        evidence.serviceRowsObserved === evidence.serviceRowsExpected;
+      if (!allObserved) {
+        return this.#result(command, "failed", "Some rows are not observed on the page after filling.", {
+          evidence
+        });
+      }
+      return this.#result(command, "succeeded",
+        `Filled ${added} row(s); ${evidence.serviceRowsObserved} row(s) observed. ` +
+        (totalsMatch
+          ? "Observed total matches the packet."
+          : "Observed total does not yet match the packet; compare totals before review."), {
+          evidence,
+          findings: totalsMatch ? [] : [makeFinding("TOTAL_MISMATCH", {
+            data: { expectedTotal: evidence.expectedTotal, observedTotal: evidence.observedTotal }
+          })],
+          nextActions: totalsMatch ? ["compare_totals", "undo_fill"] : ["undo_fill", "mark_manual"]
+        });
+    }
+
+    if (command.action === "verifyTotal") {
+      const evidence = this.#fillEvidence(this.#facts.serviceRows);
+      const matched = evidence.observedTotal === evidence.expectedTotal &&
+        evidence.serviceRowsObserved === evidence.serviceRowsExpected;
+      if (!matched) {
+        return this.#result(command, "blocked",
+          `Observed total ${evidence.observedTotal ?? "(none)"} over ${evidence.serviceRowsObserved} row(s) does not match the packet total ${evidence.expectedTotal} over ${evidence.serviceRowsExpected} row(s).`, {
+            evidence,
+            findings: [makeFinding("TOTAL_MISMATCH", {
+              data: { expectedTotal: evidence.expectedTotal, observedTotal: evidence.observedTotal }
+            })],
+            nextActions: ["show_service_rows", "undo_fill", "mark_manual"]
+          });
+      }
+      return this.#result(command, "succeeded",
+        `Observed total ${evidence.observedTotal} matches the packet total over ${evidence.serviceRowsObserved} row(s).`, {
+          evidence,
+          nextActions: ["user_review"]
+        });
+    }
+
+    if (command.action === "uploadArtifact") {
+      const artifact = this.#facts.artifacts.find((candidate) => candidate.kind === input.kind);
+      if (!artifact) {
+        return this.#result(command, "failed", `No artifact of kind ${JSON.stringify(input.kind)} is available for this packet.`, {
+          evidence: { kind: input.kind ?? null }
+        });
+      }
+      // Integrity check against the manifest hash before anything leaves
+      // the workbench.
+      if (sha256Hex(artifact.content) !== artifact.sha256) {
+        return this.#result(command, "blocked",
+          `Artifact ${artifact.filename} does not match its manifest hash and will not be uploaded.`, {
+            evidence: { filename: artifact.filename, kind: artifact.kind },
+            findings: [makeFinding("ARTIFACT_TAMPERED", {
+              data: { resolvedBy: "generate_artifacts", filename: artifact.filename }
+            })]
+          });
+      }
+      const attachmentName = artifact.filename.split("/").at(-1);
+      const alreadyObserved = page.controls.some(
+        (control) => control.name === "attachment" && control.value === attachmentName
+      );
+      if (!alreadyObserved) {
+        const baseFields = this.#addFormFields(page, "/portal/claim/attach");
+        if (!baseFields) {
+          return this.#result(command, "failed", "The claim form has no attachment form.", {
+            findings: [makeFinding("TARGET_NOT_FOUND", { data: { target: "attachment form" } })]
+          });
+        }
+        await this.#driver.submitForm("/portal/claim/attach", {
+          ...baseFields,
+          filename: attachmentName,
+          content: artifact.content
+        });
+        if (this.#driver.currentStatus() >= 400) {
+          return this.#result(command, "failed", `The destination rejected the attachment ${attachmentName}.`);
+        }
+      }
+      const observed = this.#driver.currentPage().controls.some(
+        (control) => control.name === "attachment" && control.value === attachmentName
+      );
+      if (!observed) {
+        return this.#result(command, "failed", `The attachment ${attachmentName} is not observed on the page after upload.`);
+      }
+      return this.#result(command, "succeeded", `Attached ${attachmentName} (${artifact.sha256.slice(0, 12)}…).`, {
+        evidence: { filename: attachmentName, sha256: artifact.sha256, observedAttachment: true }
+      });
+    }
+
+    if (command.action === "undoFill") {
+      let removed = 0;
+      while (true) {
+        const pending = [...this.#addedRowSignatures.entries()].filter(([, count]) => count > 0);
+        if (pending.length === 0) break;
+        const current = observedRows(this.#driver.currentPage());
+        const target = current.find((row) => (this.#addedRowSignatures.get(rowSignature(row)) ?? 0) > 0);
+        if (!target) break;
+        const baseFields = this.#addFormFields(this.#driver.currentPage(), "/portal/claim/remove");
+        await this.#driver.submitForm("/portal/claim/remove", {
+          ...(baseFields ?? {}),
+          row: target.rowName
+        });
+        if (this.#driver.currentStatus() >= 400) {
+          return this.#result(command, "failed", `The destination refused to remove ${target.rowName}.`, {
+            evidence: { removedRows: removed }
+          });
+        }
+        const signature = rowSignature(target);
+        this.#addedRowSignatures.set(signature, this.#addedRowSignatures.get(signature) - 1);
+        removed += 1;
+      }
+      const evidence = this.#fillEvidence(this.#facts.serviceRows);
+      return this.#result(command, "succeeded",
+        `Removed ${removed} row(s) this session had filled; ${evidence.serviceRowsObserved} row(s) remain.`, {
+          evidence: { ...evidence, removedRows: removed },
+          nextActions: ["fill_service_rows", "read_page"]
+        });
+    }
+
     return this.#result(command, "failed", `The action ${command.action} is not implemented yet.`);
   }
 }

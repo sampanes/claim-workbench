@@ -1,52 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import { startFakePortal } from "../../../examples/fake-portal/server.mjs";
-import { HttpPageDriver } from "../src/drivers/http-driver.js";
-import { BrowserWorker } from "../src/worker.js";
-
-const TAYLOR_FACTS = {
-  packetId: "packet_0001",
-  memberId: "SYN-000123",
-  memberName: "Taylor Example",
-  serviceRows: [
-    { lineId: "service_1", serviceDate: "2026-06-03", code: "SYN-90834", units: 1, amount: "125.00" },
-    { lineId: "service_2", serviceDate: "2026-06-10", code: "SYN-90834", units: 1, amount: "125.00" }
-  ],
-  expectedTotal: "250.00",
-  artifacts: []
-};
-
-let commandCounter = 0;
-export function command(action, { mode = "SubmitWithExplicitApproval", input, packetId = "packet_0001", overrides } = {}) {
-  commandCounter += 1;
-  return {
-    protocolVersion: "1",
-    commandId: `cmd_${String(commandCounter).padStart(4, "0")}`,
-    runId: "run_0001",
-    packetId,
-    recipeId: "synthetic-eap-monthly",
-    stepId: "step-test",
-    action,
-    mode,
-    approvalToken: null,
-    input,
-    ...overrides
-  };
-}
-
-async function setup({ diagnosticMode = false, facts = TAYLOR_FACTS } = {}) {
-  const portal = await startFakePortal();
-  const recipe = JSON.parse(await readFile(new URL("../../../examples/synthetic-eap/recipe.json", import.meta.url), "utf8"));
-  const driver = new HttpPageDriver();
-  // Login and claim creation are the operator's manual steps, simulated at
-  // the driver level: the worker never handles credentials (ADR-0005).
-  await driver.open(`${portal.url}/portal`);
-  await driver.submitForm("/portal/login", { username: "operator", password: "synthetic" });
-  await driver.submitForm("/portal/claim/start", { memberId: facts.memberId });
-  const worker = new BrowserWorker({ driver, recipe, facts, diagnosticMode });
-  return { portal, driver, worker, recipe };
-}
+import { command, setup, TAYLOR_FACTS } from "./helpers.mjs";
 
 test("readPage recognizes the claim form with full evidence", async () => {
   const { portal, worker } = await setup();

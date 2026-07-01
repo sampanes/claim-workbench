@@ -16,3 +16,7 @@ receipts/
 local-data/
 auth-state/
 *.trace.zip
+
+dist/
+apps/*/dist/
+packages/*/dist/

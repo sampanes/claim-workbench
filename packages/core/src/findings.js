@@ -40,6 +40,24 @@ defineFinding("INVALID_UNITS", SEVERITIES.HARD_STOP, "finding.invalid_units",
 defineFinding("MISSING_SOURCE_ID", SEVERITIES.NOTICE, "finding.missing_source_id",
   "One or more service lines have no stable source identifier.");
 
+// Import (Milestone 2)
+defineFinding("IMPORT_MAPPING_INVALID", SEVERITIES.HARD_STOP, "finding.import_mapping_invalid",
+  "The import column mapping is incomplete or unsupported.");
+defineFinding("IMPORT_PARSE_ERROR", SEVERITIES.HARD_STOP, "finding.import_parse_error",
+  "The source report could not be parsed.");
+defineFinding("IMPORT_MISSING_COLUMN", SEVERITIES.HARD_STOP, "finding.import_missing_column",
+  "The source report is missing a mapped column.");
+defineFinding("IMPORT_EMPTY", SEVERITIES.HARD_STOP, "finding.import_empty",
+  "The source report contains no data rows.");
+defineFinding("IMPORT_ROW_INVALID", SEVERITIES.HARD_STOP, "finding.import_row_invalid",
+  "A source row could not be normalized into a service line.");
+
+// Duplicate detection (Milestone 2)
+defineFinding("DUPLICATE_SERVICE", SEVERITIES.WARNING, "finding.duplicate_service",
+  "A service line duplicates previously imported work.");
+defineFinding("NEAR_DUPLICATE_SERVICE", SEVERITIES.WARNING, "finding.near_duplicate_service",
+  "A service line closely matches previously imported work with changed content.");
+
 // Money
 defineFinding("MALFORMED_MONEY", SEVERITIES.HARD_STOP, "finding.malformed_money",
   "A money value is not a valid decimal amount.");

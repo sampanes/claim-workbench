@@ -202,6 +202,97 @@ export const helpTopics = [
     related: ["finding.duplicate_service_line_id"]
   },
   {
+    id: "finding.import_mapping_invalid",
+    title: "The import mapping is not usable",
+    summary: "The column mapping for this source is incomplete or uses an unsupported version.",
+    appliesWhen: { findingCode: "IMPORT_MAPPING_INVALID" },
+    explanation: [
+      "The mapping must name the client, date, code, and amount columns and declare a currency.",
+      "Fix the mapping configuration; do not edit the source report to match a broken mapping."
+    ],
+    allowedActions: ["mark_manual"],
+    neverSuggest: ["invent_value"],
+    related: ["finding.import_missing_column"]
+  },
+  {
+    id: "finding.import_parse_error",
+    title: "The source report cannot be parsed",
+    summary: "The file is not structurally valid CSV.",
+    appliesWhen: { findingCode: "IMPORT_PARSE_ERROR" },
+    explanation: [
+      "Re-export the report from the source system.",
+      "Check for a truncated download or an unclosed quoted field."
+    ],
+    allowedActions: ["mark_manual"],
+    neverSuggest: ["edit_packet_by_hand"],
+    related: ["finding.import_row_invalid"]
+  },
+  {
+    id: "finding.import_missing_column",
+    title: "A mapped column is missing",
+    summary: "The source report does not contain a column the mapping requires.",
+    appliesWhen: { findingCode: "IMPORT_MISSING_COLUMN" },
+    explanation: [
+      "The source system may have changed its export format.",
+      "Update the column mapping or re-export the report, then import again."
+    ],
+    allowedActions: ["mark_manual"],
+    neverSuggest: ["invent_value"],
+    related: ["finding.import_mapping_invalid"]
+  },
+  {
+    id: "finding.import_empty",
+    title: "The source report is empty",
+    summary: "The report parsed correctly but contains no data rows.",
+    appliesWhen: { findingCode: "IMPORT_EMPTY" },
+    explanation: [
+      "Check the export filters and date range in the source system.",
+      "An empty import creates no packets."
+    ],
+    allowedActions: ["mark_manual"],
+    neverSuggest: [],
+    related: ["finding.import_parse_error"]
+  },
+  {
+    id: "finding.import_row_invalid",
+    title: "A source row could not be read",
+    summary: "One or more rows could not be normalized, so the affected packet may be incomplete.",
+    appliesWhen: { findingCode: "IMPORT_ROW_INVALID" },
+    explanation: [
+      "The row and its problems are listed in the finding details.",
+      "Fix the source report and re-import; rows are never silently dropped from a billable packet."
+    ],
+    allowedActions: ["mark_manual"],
+    neverSuggest: ["invent_value", "submit"],
+    related: ["finding.import_parse_error"]
+  },
+  {
+    id: "finding.duplicate_service",
+    title: "Already imported",
+    summary: "A service line exactly matches previously imported work.",
+    appliesWhen: { findingCode: "DUPLICATE_SERVICE" },
+    explanation: [
+      "The finding details name the existing packet that already contains this service.",
+      "If the service really happened twice, record an explicit override; otherwise exclude the duplicate."
+    ],
+    allowedActions: ["record_override", "mark_manual"],
+    neverSuggest: ["submit", "ignore_warning_silently"],
+    related: ["finding.near_duplicate_service"]
+  },
+  {
+    id: "finding.near_duplicate_service",
+    title: "Similar work already imported",
+    summary: "A service line closely matches existing work but its content changed.",
+    appliesWhen: { findingCode: "NEAR_DUPLICATE_SERVICE" },
+    explanation: [
+      "A changed amount or corrected source row usually means the source report was revised.",
+      "Compare both versions and decide which one is billable before continuing."
+    ],
+    allowedActions: ["record_override", "mark_manual"],
+    neverSuggest: ["submit", "ignore_warning_silently"],
+    related: ["finding.duplicate_service"]
+  },
+  {
     id: "finding.malformed_money",
     title: "Unreadable money value",
     summary: "An amount is not a valid decimal money value.",

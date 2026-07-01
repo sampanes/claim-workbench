@@ -1,0 +1,5 @@
+Row ID,Member ID,Member Name,Service Date,Service Code,Description,Units,Amount
+SYN-ROW-0001,SYN-000123,Taylor Example,2026-06-03,SYN-90834,Synthetic individual session,1,$125.00
+SYN-ROW-0002,SYN-000123,Taylor Example,2026-06-10,SYN-90834,Synthetic individual session,1,125.00
+SYN-ROW-0003,SYN-000456,Jordan Example,06/05/2026,SYN-90837,"Synthetic extended session, initial",1,180
+SYN-ROW-0004,SYN-000456,Jordan Example,2026-06-19,SYN-90837,Synthetic extended session,1,180.00

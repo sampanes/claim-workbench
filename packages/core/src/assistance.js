@@ -57,7 +57,124 @@ export const helpTopics = [
     related: ["finding.packet_total_inconsistent"]
   },
 
+  {
+    id: "state.artifacts_generated",
+    title: "Artifacts generated",
+    summary: "Required documents exist with recorded hashes; the destination can be opened.",
+    appliesWhen: { state: "ArtifactsGenerated" },
+    explanation: [
+      "Each artifact is listed in the manifest with its hash and provenance.",
+      "If packet facts change, artifacts must be regenerated before use."
+    ],
+    allowedActions: ["open_destination", "mark_manual"],
+    neverSuggest: ["submit"],
+    related: ["action.generate_artifacts"]
+  },
+  {
+    id: "state.destination_opened",
+    title: "Destination opened",
+    summary: "A visible browser session shows the destination; the page must be recognized before anything else.",
+    appliesWhen: { state: "DestinationOpened" },
+    explanation: [
+      "Log in manually if the destination asks; the workbench never stores website passwords.",
+      "Match the record before any field is touched."
+    ],
+    allowedActions: ["read_page", "match_record", "report_unexpected_page", "mark_manual"],
+    neverSuggest: ["fill_service_rows", "submit"],
+    related: ["action.match_record"]
+  },
+  {
+    id: "state.record_matched",
+    title: "Record matched",
+    summary: "The destination shows the same client this packet bills for.",
+    appliesWhen: { state: "RecordMatched" },
+    explanation: [
+      "Matched identity evidence is recorded with the run.",
+      "Reversible filling is now available when the assistance mode permits it."
+    ],
+    allowedActions: ["fill_service_rows", "show_target", "mark_manual"],
+    neverSuggest: ["submit"],
+    related: ["action.fill_service_rows"]
+  },
+  {
+    id: "state.fields_filled",
+    title: "Fields filled",
+    summary: "Service rows are entered on the destination form and await comparison and review.",
+    appliesWhen: { state: "FieldsFilled" },
+    explanation: [
+      "Compare totals before anyone reviews or approves.",
+      "Everything filled so far can still be undone."
+    ],
+    allowedActions: ["compare_totals", "undo_fill", "user_review", "mark_manual"],
+    neverSuggest: ["submit"],
+    related: ["action.compare_totals", "action.undo_fill"]
+  },
+  {
+    id: "state.user_reviewed",
+    title: "Review confirmed",
+    summary: "A person confirmed the filled form matches the packet; submission requires explicit approval.",
+    appliesWhen: { state: "UserReviewed" },
+    explanation: [
+      "Request an approval bound to the current evidence to enable submission.",
+      "Any change to the page or packet invalidates that approval."
+    ],
+    allowedActions: ["request_approval", "undo_fill", "mark_manual"],
+    neverSuggest: ["submit_without_approval"],
+    related: ["action.request_approval", "action.submit"]
+  },
+  {
+    id: "state.submitted",
+    title: "Submitted",
+    summary: "The claim was submitted; the receipt must be captured before the packet is complete.",
+    appliesWhen: { state: "Submitted" },
+    explanation: [
+      "Capture the destination receipt so the packet carries proof of submission.",
+      "A missing receipt keeps the packet from completing."
+    ],
+    allowedActions: ["capture_receipt"],
+    neverSuggest: ["submit"],
+    related: ["action.capture_receipt"]
+  },
+  {
+    id: "state.receipt_captured",
+    title: "Receipt captured",
+    summary: "The receipt is hashed and associated with the packet.",
+    appliesWhen: { state: "ReceiptCaptured" },
+    explanation: [
+      "Completing the packet closes the workflow and keeps the audit history."
+    ],
+    allowedActions: ["complete"],
+    neverSuggest: ["submit"],
+    related: ["state.complete"]
+  },
+  {
+    id: "state.complete",
+    title: "Complete",
+    summary: "The packet finished its workflow; records and receipts remain available.",
+    appliesWhen: { state: "Complete" },
+    explanation: [
+      "No further actions are available on this run.",
+      "The audit history and receipt stay with the packet."
+    ],
+    allowedActions: [],
+    neverSuggest: ["submit"],
+    related: []
+  },
+
   // ---- Findings -----------------------------------------------------------
+  {
+    id: "finding.recipe_invalid",
+    title: "The recipe cannot be used",
+    summary: "The workflow recipe is incomplete, inconsistent, or from an unsupported version.",
+    appliesWhen: { findingCode: "RECIPE_INVALID" },
+    explanation: [
+      "A broken recipe blocks every packet that uses it.",
+      "Fix the recipe definition; packets and their data are unaffected."
+    ],
+    allowedActions: ["mark_manual"],
+    neverSuggest: ["edit_packet_by_hand"],
+    related: ["finding.packet_schema_unsupported"]
+  },
   {
     id: "finding.packet_malformed",
     title: "The packet cannot be read",
@@ -332,6 +449,46 @@ export const helpTopics = [
     related: ["action.compare_totals"]
   },
 
+  // ---- Fields and artifacts ------------------------------------------------
+  {
+    id: "field.member_id",
+    title: "Member ID",
+    summary: "The destination's stable identifier for the client being billed.",
+    appliesWhen: { field: "client.externalIds.sourceClientId" },
+    explanation: [
+      "This value comes from the source report and is used to match the destination record.",
+      "If it is missing, fix the source report or the column mapping; never guess an identifier."
+    ],
+    allowedActions: ["resolve_missing_field", "mark_manual"],
+    neverSuggest: ["invent_value"],
+    related: ["finding.missing_required_field", "action.match_record"]
+  },
+  {
+    id: "field.member_name",
+    title: "Member name",
+    summary: "The client display name used to confirm the destination record.",
+    appliesWhen: { field: "client.displayName" },
+    explanation: [
+      "The name supports record matching; the Member ID remains the authoritative identifier."
+    ],
+    allowedActions: ["resolve_missing_field", "mark_manual"],
+    neverSuggest: ["invent_value"],
+    related: ["field.member_id"]
+  },
+  {
+    id: "artifact.claim_summary",
+    title: "Claim summary document",
+    summary: "A generated document summarizing the packet's services for this billing period.",
+    appliesWhen: { artifactKind: "claim-summary" },
+    explanation: [
+      "The document is generated from packet facts and hashed into the manifest.",
+      "If service lines change after generation, the document becomes stale and must be regenerated."
+    ],
+    allowedActions: ["generate_artifacts"],
+    neverSuggest: ["edit_artifact_by_hand"],
+    related: ["action.generate_artifacts"]
+  },
+
   // ---- Actions ------------------------------------------------------------
   {
     id: "action.validate_packet",
@@ -358,6 +515,212 @@ export const helpTopics = [
     allowedActions: ["show_service_rows", "mark_manual"],
     neverSuggest: ["submit_on_mismatch"],
     related: ["finding.packet_total_inconsistent"]
+  },
+  {
+    id: "action.generate_artifacts",
+    title: "Generate artifacts",
+    summary: "Produce the recipe's required documents and record their hashes in a manifest.",
+    appliesWhen: { action: "generate_artifacts" },
+    explanation: [
+      "Artifacts are generated from packet facts, never typed by hand.",
+      "The manifest records a hash and provenance for every file so staleness and tampering are detectable."
+    ],
+    allowedActions: ["generate_artifacts"],
+    neverSuggest: ["edit_artifact_by_hand"],
+    related: ["state.artifacts_generated"]
+  },
+  {
+    id: "action.open_destination",
+    title: "Open destination",
+    summary: "Open the destination workspace in a visible browser session.",
+    appliesWhen: { action: "open_destination" },
+    explanation: [
+      "The browser stays visible and under your control at all times.",
+      "Log in yourself if the destination asks; automation waits for you."
+    ],
+    allowedActions: ["open_destination"],
+    neverSuggest: ["hide_browser"],
+    related: ["state.destination_opened"]
+  },
+  {
+    id: "action.read_page",
+    title: "Read page",
+    summary: "Classify the current page and report what it permits.",
+    appliesWhen: { action: "read_page" },
+    explanation: [
+      "Classification combines the URL, title, required text, and required controls.",
+      "Unknown or ambiguous pages disable every mutating action."
+    ],
+    allowedActions: ["read_page", "report_unexpected_page"],
+    neverSuggest: ["fill_on_unknown_page"],
+    related: ["action.report_unexpected_page"]
+  },
+  {
+    id: "action.show_target",
+    title: "Show target",
+    summary: "Highlight the relevant control without changing page data.",
+    appliesWhen: { action: "show_target" },
+    explanation: [
+      "Use this to locate a field before deciding what to do.",
+      "Highlighting never types, clicks, or submits."
+    ],
+    allowedActions: ["show_target"],
+    neverSuggest: [],
+    related: ["action.read_page"]
+  },
+  {
+    id: "action.match_record",
+    title: "Match record",
+    summary: "Confirm the destination shows the same client this packet bills for.",
+    appliesWhen: { action: "match_record" },
+    explanation: [
+      "Identity fields are compared expected-versus-observed and recorded as evidence.",
+      "An identity mismatch is a hard stop."
+    ],
+    allowedActions: ["match_record", "mark_manual"],
+    neverSuggest: ["fill_on_mismatch"],
+    related: ["state.record_matched"]
+  },
+  {
+    id: "action.fill_service_rows",
+    title: "Fill service rows",
+    summary: "Enter this packet's service rows on the destination form.",
+    appliesWhen: { action: "fill_service_rows" },
+    explanation: [
+      "Filling is reversible and only runs in a mode that permits it.",
+      "The same fill command never runs twice; repeated requests return the original result."
+    ],
+    allowedActions: ["fill_service_rows", "undo_fill"],
+    neverSuggest: ["submit"],
+    related: ["state.fields_filled", "action.undo_fill"]
+  },
+  {
+    id: "action.upload_artifact",
+    title: "Upload selected artifact",
+    summary: "Attach a generated artifact to the destination form.",
+    appliesWhen: { action: "upload_artifact" },
+    explanation: [
+      "The file is verified against its manifest hash before upload.",
+      "Stale or tampered artifacts are refused."
+    ],
+    allowedActions: ["upload_artifact"],
+    neverSuggest: ["upload_unverified_file"],
+    related: ["action.generate_artifacts"]
+  },
+  {
+    id: "action.undo_fill",
+    title: "Undo filled rows",
+    summary: "Clear the rows this workflow filled and return the form to its pre-fill state.",
+    appliesWhen: { action: "undo_fill" },
+    explanation: [
+      "Undo also reopens the comparison and review steps, since their evidence is no longer current."
+    ],
+    allowedActions: ["undo_fill"],
+    neverSuggest: [],
+    related: ["action.fill_service_rows"]
+  },
+  {
+    id: "action.user_review",
+    title: "Confirm review",
+    summary: "Record that a person reviewed the filled form against the packet.",
+    appliesWhen: { action: "user_review" },
+    explanation: [
+      "Review the rows and totals on the visible page, not a summary.",
+      "Your confirmation is recorded with the run's evidence."
+    ],
+    allowedActions: ["user_review", "undo_fill"],
+    neverSuggest: ["approve_without_looking"],
+    related: ["state.user_reviewed"]
+  },
+  {
+    id: "action.request_approval",
+    title: "Request approval",
+    summary: "Create a short-lived approval bound to the current evidence for one irreversible action.",
+    appliesWhen: { action: "request_approval" },
+    explanation: [
+      "The approval encodes the packet, step, evidence digest, and an expiry.",
+      "If anything changes before submission, the approval stops working."
+    ],
+    allowedActions: ["request_approval"],
+    neverSuggest: ["reuse_old_approval"],
+    related: ["action.submit"]
+  },
+  {
+    id: "action.submit",
+    title: "Submit claim",
+    summary: "Submit the prepared claim at the destination. This cannot be undone.",
+    appliesWhen: { action: "submit" },
+    explanation: [
+      "Submission requires a valid, unexpired approval bound to the exact current evidence.",
+      "A duplicate submission attempt is rejected, not retried."
+    ],
+    allowedActions: ["submit"],
+    neverSuggest: ["submit_without_approval", "retry_submit_automatically"],
+    related: ["state.submitted", "action.capture_receipt"]
+  },
+  {
+    id: "action.capture_receipt",
+    title: "Capture receipt",
+    summary: "Capture and hash the destination receipt and associate it with this packet.",
+    appliesWhen: { action: "capture_receipt" },
+    explanation: [
+      "The receipt identifier, capture time, and content hash become part of the packet record.",
+      "A required receipt that cannot be captured keeps the packet from completing."
+    ],
+    allowedActions: ["capture_receipt", "mark_manual"],
+    neverSuggest: ["complete_without_receipt"],
+    related: ["state.receipt_captured"]
+  },
+  {
+    id: "action.record_override",
+    title: "Record override",
+    summary: "Record an explicit, reasoned override for one warning the recipe permits.",
+    appliesWhen: { action: "record_override" },
+    explanation: [
+      "Overrides apply to warnings only; hard stops can never be overridden.",
+      "The override, its reason, and who recorded it stay in the audit history."
+    ],
+    allowedActions: ["record_override"],
+    neverSuggest: ["ignore_hard_stop"],
+    related: ["finding.duplicate_service"]
+  },
+  {
+    id: "action.report_unexpected_page",
+    title: "Report unexpected page",
+    summary: "Record that the destination showed something the recipe does not recognize.",
+    appliesWhen: { action: "report_unexpected_page" },
+    explanation: [
+      "The observed URL, title, and page evidence are recorded for review.",
+      "Mutating actions stay disabled until a recognized page is confirmed."
+    ],
+    allowedActions: ["report_unexpected_page", "mark_manual"],
+    neverSuggest: ["fill_on_unknown_page"],
+    related: ["action.read_page"]
+  },
+  {
+    id: "action.set_assistance_mode",
+    title: "Change assistance mode",
+    summary: "Raise or lower how much the workbench may do automatically.",
+    appliesWhen: { action: "set_assistance_mode" },
+    explanation: [
+      "Modes increase in explicit stages from Observe to SubmitWithExplicitApproval.",
+      "Changing modes never clears a finding and never bypasses an approval gate."
+    ],
+    allowedActions: ["set_assistance_mode"],
+    neverSuggest: ["ignore_hard_stop"],
+    related: ["action.record_override"]
+  },
+  {
+    id: "action.complete",
+    title: "Complete packet",
+    summary: "Close out the packet after its receipt is captured.",
+    appliesWhen: { action: "complete" },
+    explanation: [
+      "Completion is only available once the receipt is captured and associated."
+    ],
+    allowedActions: ["complete"],
+    neverSuggest: ["complete_without_receipt"],
+    related: ["state.complete"]
   },
   {
     id: "action.mark_manual",

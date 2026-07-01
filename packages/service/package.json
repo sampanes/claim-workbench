@@ -1,0 +1,13 @@
+{
+  "name": "@claim-workbench/service",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/service.js",
+  "bin": { "claim-service": "bin/service.js" },
+  "scripts": {
+    "build": "node --check src/store.js && node --check src/service.js && node --check src/stdio.js && node --check bin/service.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": { "@claim-workbench/core": "workspace:*" }
+}

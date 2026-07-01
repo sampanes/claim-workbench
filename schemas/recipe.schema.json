@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claim-workbench.dev/schemas/recipe.schema.json",
+  "title": "WorkflowRecipe",
+  "description": "Versioned workflow recipe: required fields, required artifacts, destination classification, permitted assistance modes, overridable warnings, and ordered steps.",
+  "type": "object",
+  "required": ["recipeVersion", "id", "revision", "title", "destinationId", "allowedModes", "steps"],
+  "properties": {
+    "recipeVersion": { "const": "1" },
+    "id": { "type": "string", "minLength": 1 },
+    "revision": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "destinationId": { "type": "string", "minLength": 1 },
+    "destination": {
+      "type": "object",
+      "properties": {
+        "classification": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/pageClassification" }
+        }
+      }
+    },
+    "requiredFields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "label"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
+          "helpTopicId": { "type": "string" }
+        }
+      }
+    },
+    "requiredArtifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind"],
+        "properties": {
+          "kind": { "type": "string", "minLength": 1 },
+          "label": { "type": "string" },
+          "helpTopicId": { "type": "string" }
+        }
+      }
+    },
+    "allowedModes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": ["Observe", "Guide", "Prefill", "RunReversibleSteps", "StopBeforeSubmit", "SubmitWithExplicitApproval"]
+      }
+    },
+    "overridableWarnings": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "action"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
+          "action": { "type": "string", "minLength": 1 },
+          "irreversible": { "type": "boolean" },
+          "approvalGate": { "type": "boolean" },
+          "minimumMode": {
+            "enum": ["Observe", "Guide", "Prefill", "RunReversibleSteps", "StopBeforeSubmit", "SubmitWithExplicitApproval"]
+          },
+          "helpTopicId": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "pageClassification": {
+      "type": "object",
+      "description": "Page recognition evidence. URL alone is never sufficient.",
+      "properties": {
+        "urlPattern": { "type": "string" },
+        "titlePattern": { "type": "string" },
+        "requiredText": { "type": "array", "items": { "type": "string" } },
+        "requiredControls": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

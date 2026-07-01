@@ -117,8 +117,9 @@ test("every registered finding code has a resolvable help topic", () => {
     const topic = getHelpTopic(definition.helpTopicId);
     assert.ok(topic, `finding ${code} points at missing help topic ${definition.helpTopicId}`);
     const applied = findTopicForFinding(code);
-    // INVALID_CURRENCY intentionally shares the malformed-money topic.
-    if (code !== "INVALID_CURRENCY") {
+    // A few codes intentionally share a topic with a sibling code.
+    const sharesTopic = ["INVALID_CURRENCY", "RECIPE_SCHEMA_UNSUPPORTED", "RECIPE_GATE_MISSING"];
+    if (!sharesTopic.includes(code)) {
       assert.ok(applied, `no topic appliesWhen.findingCode for ${code}`);
     }
   }

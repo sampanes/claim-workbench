@@ -52,6 +52,14 @@ defineFinding("IMPORT_EMPTY", SEVERITIES.HARD_STOP, "finding.import_empty",
 defineFinding("IMPORT_ROW_INVALID", SEVERITIES.HARD_STOP, "finding.import_row_invalid",
   "A source row could not be normalized into a service line.");
 
+// Recipes (Milestone 3)
+defineFinding("RECIPE_SCHEMA_UNSUPPORTED", SEVERITIES.HARD_STOP, "finding.recipe_invalid",
+  "The recipe uses a schema version this application does not support.");
+defineFinding("RECIPE_INVALID", SEVERITIES.HARD_STOP, "finding.recipe_invalid",
+  "The recipe definition is incomplete or inconsistent.");
+defineFinding("RECIPE_GATE_MISSING", SEVERITIES.HARD_STOP, "finding.recipe_invalid",
+  "An irreversible recipe step declares no approval gate.");
+
 // Duplicate detection (Milestone 2)
 defineFinding("DUPLICATE_SERVICE", SEVERITIES.WARNING, "finding.duplicate_service",
   "A service line duplicates previously imported work.");

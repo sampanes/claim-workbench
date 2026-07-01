@@ -15,3 +15,9 @@ importers:
         version: link:../../packages/core
 
   packages/core: {}
+
+  packages/service:
+    dependencies:
+      '@claim-workbench/core':
+        specifier: workspace:*
+        version: link:../core

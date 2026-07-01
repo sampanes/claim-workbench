@@ -52,6 +52,7 @@ import -> normalize -> validate -> generate -> assist -> verify -> approve
 ```
 
 See [Architecture](docs/ARCHITECTURE.md),
+[architecture decisions](docs/adr/README.md),
 [Interaction model](docs/INTERACTION_MODEL.md),
 [Worker protocol](docs/WORKER_PROTOCOL.md),
 [roadmap](docs/ROADMAP.md),
@@ -59,4 +60,4 @@ See [Architecture](docs/ARCHITECTURE.md),
 
 ## License
 
-License selection is pending.
+Licensed under the [Apache License 2.0](LICENSE).

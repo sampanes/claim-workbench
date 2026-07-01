@@ -43,6 +43,17 @@ export {
 
 export { formatValidationReport, validatePacket } from "./validate-packet.js";
 
+export { CsvError, parseCsv } from "./csv.js";
+export {
+  MAPPING_VERSION,
+  clientIdFromKey,
+  importCsv,
+  normalizeAmount,
+  normalizeServiceDate,
+  validateMapping
+} from "./import.js";
+export { detectDuplicates, serviceLedgerFromPackets } from "./duplicates.js";
+
 export {
   findTopicForFinding,
   findTopicForState,

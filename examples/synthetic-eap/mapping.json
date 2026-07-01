@@ -1,0 +1,19 @@
+{
+  "mappingVersion": "1",
+  "adapterId": "csv-generic",
+  "adapterVersion": "1",
+  "destinationId": "synthetic-eap-portal",
+  "destinationLabel": "Synthetic EAP Portal",
+  "recipeId": "synthetic-eap-monthly",
+  "currency": "USD",
+  "columns": {
+    "sourceId": "Row ID",
+    "clientId": "Member ID",
+    "clientName": "Member Name",
+    "serviceDate": "Service Date",
+    "code": "Service Code",
+    "description": "Description",
+    "units": "Units",
+    "amount": "Amount"
+  }
+}

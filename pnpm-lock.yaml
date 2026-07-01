@@ -1,0 +1,17 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .: {}
+
+  apps/workbench:
+    dependencies:
+      '@claim-workbench/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+
+  packages/core: {}

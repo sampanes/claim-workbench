@@ -53,6 +53,7 @@ import -> normalize -> validate -> generate -> assist -> verify -> approve
 
 See [Architecture](docs/ARCHITECTURE.md),
 [architecture decisions](docs/adr/README.md),
+[contextual assistance](docs/ASSISTANCE.md),
 [Interaction model](docs/INTERACTION_MODEL.md),
 [Worker protocol](docs/WORKER_PROTOCOL.md),
 [roadmap](docs/ROADMAP.md),

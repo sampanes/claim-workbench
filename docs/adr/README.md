@@ -12,6 +12,7 @@ replacing implementation documentation.
 - [ADR-0004: Adapter Distribution](0004-adapter-distribution.md)
 - [ADR-0005: Local Security and Data Lifecycle](0005-local-security-and-data-lifecycle.md)
 - [ADR-0006: License and Releases](0006-license-and-releases.md)
+- [ADR-0007: Contextual Assistance Architecture](0007-contextual-assistance-architecture.md)
 
 ## Format
 

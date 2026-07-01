@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1",
+  "id": "packet_synthetic_bad_identity",
+  "createdAt": "2026-06-15T12:00:00.000Z",
+  "client": {
+    "displayName": "Riley Example",
+    "externalIds": {}
+  },
+  "destination": {
+    "id": "synthetic-eap-portal",
+    "label": "Synthetic EAP Portal"
+  },
+  "recipeId": "synthetic-eap-monthly",
+  "provenance": {
+    "importBatchId": "batch_synthetic_002",
+    "sourceName": "synthetic-eap-2026-06.csv",
+    "sourceSha256": null,
+    "adapterId": "csv-generic",
+    "adapterVersion": "1",
+    "importedAt": "2026-06-15T12:00:00.000Z"
+  },
+  "serviceLines": [
+    {
+      "id": "service_1",
+      "sourceId": "SYN-ROW-0101",
+      "serviceDate": "2026-06-05",
+      "code": "SYN-90837",
+      "description": "Synthetic extended session",
+      "units": 1,
+      "amount": { "amount": "180.00", "currency": "USD" }
+    }
+  ],
+  "total": { "amount": "180.00", "currency": "USD" },
+  "workflowState": "Imported",
+  "findings": [],
+  "artifacts": [],
+  "receipts": []
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claim-workbench.dev/schemas/finding.schema.json",
+  "title": "Finding",
+  "description": "A deterministic validation or workflow finding. Codes are stable; severity and help topic come from the shared finding registry.",
+  "type": "object",
+  "required": ["code", "severity", "message"],
+  "properties": {
+    "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+    "severity": { "enum": ["notice", "warning", "hard_stop"] },
+    "message": { "type": "string", "minLength": 1 },
+    "path": { "type": "string" },
+    "helpTopicId": { "type": "string" },
+    "data": { "type": "object" }
+  }
+}

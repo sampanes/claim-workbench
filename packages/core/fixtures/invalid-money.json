@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1",
+  "id": "packet_synthetic_bad_money",
+  "createdAt": "2026-06-15T12:00:00.000Z",
+  "client": {
+    "id": "client_synthetic_004",
+    "displayName": "Casey Example",
+    "externalIds": { "memberId": "SYN-000789" }
+  },
+  "destination": {
+    "id": "synthetic-eap-portal",
+    "label": "Synthetic EAP Portal"
+  },
+  "recipeId": "synthetic-eap-monthly",
+  "provenance": {
+    "importBatchId": "batch_synthetic_004",
+    "sourceName": "synthetic-eap-2026-06.csv",
+    "sourceSha256": null,
+    "adapterId": "csv-generic",
+    "adapterVersion": "1",
+    "importedAt": "2026-06-15T12:00:00.000Z"
+  },
+  "serviceLines": [
+    {
+      "id": "service_1",
+      "sourceId": "SYN-ROW-0301",
+      "serviceDate": "2026-06-12",
+      "code": "SYN-90834",
+      "description": "Synthetic individual session",
+      "units": 1,
+      "amount": { "amount": "125.5", "currency": "USD" }
+    }
+  ],
+  "total": { "amount": "125.50", "currency": "USD" },
+  "workflowState": "Imported",
+  "findings": [],
+  "artifacts": [],
+  "receipts": []
+}

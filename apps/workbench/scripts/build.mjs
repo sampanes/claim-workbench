@@ -1,14 +1,22 @@
-import { mkdir, readFile, writeFile, copyFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, writeFile, copyFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 const dist = new URL("../dist/", import.meta.url);
-await mkdir(dist, { recursive: true });
+const coreSrc = new URL("../../../packages/core/src/", import.meta.url);
+await mkdir(new URL("core/", dist), { recursive: true });
+
+// The workbench ships the portable core as plain ES modules. cli.js is the
+// Node-only entry point and stays out of the browser bundle.
+const coreFiles = (await readdir(coreSrc)).filter((name) => name.endsWith(".js") && name !== "cli.js");
+for (const name of coreFiles) {
+  await copyFile(new URL(name, coreSrc), new URL(`core/${name}`, dist));
+}
+
 let main = await readFile(new URL("../src/main.js", import.meta.url), "utf8");
 main = main
-  .replace('import { helpTopics, packetTotal, syntheticPacket } from "@claim-workbench/core";', 'import { helpTopics, packetTotal, syntheticPacket } from "./core.js";')
+  .replace(/from "@claim-workbench\/core";/, 'from "./core/index.js";')
   .replace('import "./styles.css";\n', "");
-await writeFile(new URL("../dist/main.js", import.meta.url), main);
-await copyFile(new URL("../../../packages/core/src/index.js", import.meta.url), new URL("../dist/core.js", import.meta.url));
-await copyFile(new URL("../src/styles.css", import.meta.url), new URL("../dist/styles.css", import.meta.url));
-await writeFile(new URL("../dist/index.html", import.meta.url), `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Claim Workbench</title><link rel="stylesheet" href="./styles.css"/></head><body><div id="root"></div><script type="module" src="./main.js"></script></body></html>\n`);
+await writeFile(new URL("main.js", dist), main);
+await copyFile(new URL("../src/styles.css", import.meta.url), new URL("styles.css", dist));
+await writeFile(new URL("index.html", dist), `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Claim Workbench</title><link rel="stylesheet" href="./styles.css"/></head><body><div id="root"></div><script type="module" src="./main.js"></script></body></html>\n`);
 console.log(`Built ${dirname(join(dist.pathname, "index.html"))}`);

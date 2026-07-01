@@ -62,3 +62,28 @@ See [Architecture](docs/ARCHITECTURE.md),
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
+
+## Prototype Skeleton
+
+This repository now includes a Milestone 0 executable skeleton:
+
+- `packages/core` contains deterministic domain types, a synthetic billing
+  packet, decimal-string total calculation, and no-model help-topic rendering.
+- `apps/workbench` contains a dependency-light portable browser workbench shell
+  styled to feel at home on macOS while still running in any modern browser.
+- `scripts/bootstrap-macos.sh` and `scripts/verify-macos.sh` provide the first
+  bootstrap and verification entry points described in the macOS setup docs.
+
+Run the portable prototype with:
+
+```sh
+corepack enable pnpm
+pnpm install
+pnpm --filter @claim-workbench/workbench dev
+```
+
+Verify the current skeleton with:
+
+```sh
+pnpm verify
+```

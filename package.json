@@ -1,0 +1,14 @@
+{
+  "name": "claim-workbench",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local-first claim workflow workbench prototype.",
+  "packageManager": "pnpm@10.28.1",
+  "engines": { "node": ">=24.0.0" },
+  "scripts": {
+    "bootstrap": "pnpm install --frozen-lockfile",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "verify": "pnpm test && pnpm build"
+  }
+}

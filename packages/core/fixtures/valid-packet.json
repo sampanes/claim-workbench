@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1",
+  "id": "packet_synthetic_001",
+  "createdAt": "2026-06-15T12:00:00.000Z",
+  "client": {
+    "id": "client_synthetic_001",
+    "displayName": "Taylor Example",
+    "externalIds": { "memberId": "SYN-000123" }
+  },
+  "destination": {
+    "id": "synthetic-eap-portal",
+    "label": "Synthetic EAP Portal"
+  },
+  "recipeId": "synthetic-eap-monthly",
+  "period": { "start": "2026-06-01", "end": "2026-06-30" },
+  "provenance": {
+    "importBatchId": "batch_synthetic_001",
+    "sourceName": "synthetic-eap-2026-06.csv",
+    "sourceSha256": null,
+    "adapterId": "csv-generic",
+    "adapterVersion": "1",
+    "importedAt": "2026-06-15T12:00:00.000Z"
+  },
+  "serviceLines": [
+    {
+      "id": "service_1",
+      "sourceId": "SYN-ROW-0001",
+      "serviceDate": "2026-06-03",
+      "code": "SYN-90834",
+      "description": "Synthetic individual session",
+      "units": 1,
+      "amount": { "amount": "125.00", "currency": "USD" }
+    },
+    {
+      "id": "service_2",
+      "sourceId": "SYN-ROW-0002",
+      "serviceDate": "2026-06-10",
+      "code": "SYN-90834",
+      "description": "Synthetic individual session",
+      "units": 1,
+      "amount": { "amount": "125.00", "currency": "USD" }
+    }
+  ],
+  "total": { "amount": "250.00", "currency": "USD" },
+  "workflowState": "Imported",
+  "findings": [],
+  "artifacts": [],
+  "receipts": []
+}

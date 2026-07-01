@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1",
+  "id": "packet_synthetic_bad_date",
+  "createdAt": "2026-06-15T12:00:00.000Z",
+  "client": {
+    "id": "client_synthetic_003",
+    "displayName": "Jordan Example",
+    "externalIds": { "memberId": "SYN-000456" }
+  },
+  "destination": {
+    "id": "synthetic-eap-portal",
+    "label": "Synthetic EAP Portal"
+  },
+  "recipeId": "synthetic-eap-monthly",
+  "provenance": {
+    "importBatchId": "batch_synthetic_003",
+    "sourceName": "synthetic-eap-2026-06.csv",
+    "sourceSha256": null,
+    "adapterId": "csv-generic",
+    "adapterVersion": "1",
+    "importedAt": "2026-06-15T12:00:00.000Z"
+  },
+  "serviceLines": [
+    {
+      "id": "service_1",
+      "sourceId": "SYN-ROW-0201",
+      "serviceDate": "2026-02-30",
+      "code": "SYN-90834",
+      "description": "Synthetic individual session",
+      "units": 1,
+      "amount": { "amount": "125.00", "currency": "USD" }
+    }
+  ],
+  "total": { "amount": "125.00", "currency": "USD" },
+  "workflowState": "Imported",
+  "findings": [],
+  "artifacts": [],
+  "receipts": []
+}

@@ -450,6 +450,124 @@ export const helpTopics = [
   },
 
   {
+    id: "finding.page_unknown",
+    title: "This page is not recognized",
+    summary: "The destination shows a page the recipe cannot identify, so nothing may be changed on it.",
+    appliesWhen: { findingCode: "PAGE_UNKNOWN" },
+    explanation: [
+      "Recognition needs the URL, title, expected text, and expected controls to agree; a lookalike or partially loaded page fails on purpose.",
+      "Read the page again once it finishes loading, or report it so the recipe can be updated."
+    ],
+    allowedActions: ["read_page", "report_unexpected_page", "mark_manual"],
+    neverSuggest: ["fill_on_unknown_page", "submit"],
+    related: ["action.read_page", "action.report_unexpected_page"]
+  },
+  {
+    id: "finding.record_mismatch",
+    title: "Wrong record on screen",
+    summary: "The destination shows a different client than this packet bills for.",
+    appliesWhen: { findingCode: "RECORD_MISMATCH" },
+    explanation: [
+      "Filling anything on the wrong member's claim is never acceptable.",
+      "Open the correct record at the destination, then match again."
+    ],
+    allowedActions: ["match_record", "mark_manual"],
+    neverSuggest: ["fill_on_mismatch", "submit"],
+    related: ["action.match_record"]
+  },
+  {
+    id: "finding.target_not_found",
+    title: "Control not found",
+    summary: "A control the workflow expected is missing from an otherwise recognized page.",
+    appliesWhen: { findingCode: "TARGET_NOT_FOUND" },
+    explanation: [
+      "The destination may have changed its layout.",
+      "Report the page so the recipe's expectations can be updated."
+    ],
+    allowedActions: ["read_page", "report_unexpected_page"],
+    neverSuggest: ["fill_on_unknown_page"],
+    related: ["finding.page_unknown"]
+  },
+  {
+    id: "finding.total_mismatch",
+    title: "Why do the totals not match?",
+    summary: "The packet total and destination total are different.",
+    appliesWhen: { findingCode: "TOTAL_MISMATCH" },
+    explanation: [
+      "Compare the number of service rows.",
+      "Compare each amount against the packet.",
+      "Do not continue until the difference is resolved."
+    ],
+    allowedActions: ["show_service_rows", "compare_totals", "mark_manual"],
+    neverSuggest: ["ignore_hard_stop", "submit"],
+    related: ["action.compare_totals"]
+  },
+  {
+    id: "finding.worker_paused",
+    title: "Assistance is paused",
+    summary: "You paused browser assistance; commands wait until you resume.",
+    appliesWhen: { findingCode: "WORKER_PAUSED" },
+    explanation: [
+      "Nothing was executed while paused.",
+      "Resume when you are ready; the workflow continues from the same step."
+    ],
+    allowedActions: ["read_page"],
+    neverSuggest: [],
+    related: ["finding.worker_stopped"]
+  },
+  {
+    id: "finding.worker_stopped",
+    title: "Emergency stop is active",
+    summary: "The emergency stop ended this assistance session; no further commands will run.",
+    appliesWhen: { findingCode: "WORKER_STOPPED" },
+    explanation: [
+      "Pending and future commands were cancelled.",
+      "Review the destination in the browser, then start a new session when ready."
+    ],
+    allowedActions: ["mark_manual"],
+    neverSuggest: [],
+    related: ["finding.worker_paused"]
+  },
+  {
+    id: "finding.duplicate_submission",
+    title: "Already submitted at the destination",
+    summary: "The destination rejected the submission because this claim was already submitted.",
+    appliesWhen: { findingCode: "DUPLICATE_SUBMISSION" },
+    explanation: [
+      "Capture the existing receipt instead of retrying.",
+      "If no receipt is on file, investigate what was submitted and when before doing anything else."
+    ],
+    allowedActions: ["capture_receipt", "mark_manual"],
+    neverSuggest: ["retry_submit_automatically", "submit"],
+    related: ["action.capture_receipt"]
+  },
+  {
+    id: "finding.receipt_missing",
+    title: "No receipt captured",
+    summary: "The workflow requires a submission receipt that could not be captured.",
+    appliesWhen: { findingCode: "RECEIPT_MISSING" },
+    explanation: [
+      "A submission without its receipt cannot be completed or audited.",
+      "Locate the receipt at the destination and capture it, or handle the packet manually."
+    ],
+    allowedActions: ["capture_receipt", "mark_manual"],
+    neverSuggest: ["complete_without_receipt"],
+    related: ["state.submitted"]
+  },
+  {
+    id: "finding.approval_invalid",
+    title: "Approval missing or no longer valid",
+    summary: "The irreversible action did not run because its approval is absent, expired, used, or bound to different evidence.",
+    appliesWhen: { findingCode: "APPROVAL_REQUIRED" },
+    explanation: [
+      "Approvals are short-lived and bound to the exact evidence you reviewed.",
+      "Re-check the page, request a fresh approval, and submit while it is valid."
+    ],
+    allowedActions: ["request_approval", "mark_manual"],
+    neverSuggest: ["submit_without_approval", "reuse_old_approval"],
+    related: ["action.request_approval", "action.submit"]
+  },
+  {
     id: "finding.artifact_missing",
     title: "A required document is missing",
     summary: "A document this workflow requires does not exist or was never generated.",

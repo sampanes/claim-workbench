@@ -52,6 +52,38 @@ defineFinding("IMPORT_EMPTY", SEVERITIES.HARD_STOP, "finding.import_empty",
 defineFinding("IMPORT_ROW_INVALID", SEVERITIES.HARD_STOP, "finding.import_row_invalid",
   "A source row could not be normalized into a service line.");
 
+// Destination pages and worker evidence (Milestones 5-7)
+defineFinding("PAGE_UNKNOWN", SEVERITIES.HARD_STOP, "finding.page_unknown",
+  "The current destination page is not recognized, so mutating actions are disabled.");
+defineFinding("RECORD_MISMATCH", SEVERITIES.HARD_STOP, "finding.record_mismatch",
+  "The destination shows a different identity than this packet bills for.");
+defineFinding("TARGET_NOT_FOUND", SEVERITIES.WARNING, "finding.target_not_found",
+  "An expected control is missing from a recognized page.");
+defineFinding("TOTAL_MISMATCH", SEVERITIES.HARD_STOP, "finding.total_mismatch",
+  "The packet total and destination total are different.");
+defineFinding("WORKER_PAUSED", SEVERITIES.NOTICE, "finding.worker_paused",
+  "The worker is paused; the command was not executed.");
+defineFinding("WORKER_STOPPED", SEVERITIES.HARD_STOP, "finding.worker_stopped",
+  "The emergency stop is active; no further commands will run in this worker.");
+defineFinding("DUPLICATE_SUBMISSION", SEVERITIES.HARD_STOP, "finding.duplicate_submission",
+  "The destination reports this claim was already submitted.");
+defineFinding("RECEIPT_MISSING", SEVERITIES.HARD_STOP, "finding.receipt_missing",
+  "A required submission receipt could not be captured.");
+
+// Approval (Milestone 7)
+defineFinding("APPROVAL_REQUIRED", SEVERITIES.HARD_STOP, "finding.approval_invalid",
+  "This irreversible action requires a valid approval.");
+defineFinding("APPROVAL_EXPIRED", SEVERITIES.HARD_STOP, "finding.approval_invalid",
+  "The approval expired before the action ran.");
+defineFinding("APPROVAL_EVIDENCE_MISMATCH", SEVERITIES.HARD_STOP, "finding.approval_invalid",
+  "The evidence changed after approval was granted.");
+defineFinding("APPROVAL_SCOPE_MISMATCH", SEVERITIES.HARD_STOP, "finding.approval_invalid",
+  "The approval was granted for a different action, packet, run, or step.");
+defineFinding("APPROVAL_BAD_SIGNATURE", SEVERITIES.HARD_STOP, "finding.approval_invalid",
+  "The approval token failed verification.");
+defineFinding("APPROVAL_ALREADY_USED", SEVERITIES.HARD_STOP, "finding.approval_invalid",
+  "The approval token was already used once and cannot be reused.");
+
 // Artifacts (Milestone 4)
 defineFinding("ARTIFACT_MISSING", SEVERITIES.HARD_STOP, "finding.artifact_missing",
   "A required artifact does not exist.");

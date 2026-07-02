@@ -6,7 +6,7 @@
 import { CsvError, parseCsv } from "./csv.js";
 import { compareIsoDates, isValidIsoDate, utcNow } from "./dates.js";
 import { makeFinding } from "./findings.js";
-import { isValidCurrency } from "./money.js";
+import { isValidAmount, isValidCurrency } from "./money.js";
 import { newId } from "./ids.js";
 import { PACKET_SCHEMA_VERSION, packetTotal, serviceLineFingerprint } from "./packet.js";
 import { sha256Hex } from "./sha256.js";
@@ -51,8 +51,13 @@ export function normalizeAmount(raw) {
   value = value.replaceAll(",", "");
   if (!/^\d+(\.\d{1,2})?$/.test(value)) return null;
   const [units, cents = ""] = value.split(".");
-  const normalizedUnits = String(Number(units));
-  return `${normalizedUnits}.${cents.padEnd(2, "0")}`;
+  // Strip leading zeros lexically; never route domain money through
+  // binary floating point (ADR-0003).
+  const normalizedUnits = units.replace(/^0+(?=\d)/, "");
+  const amount = `${normalizedUnits}.${cents.padEnd(2, "0")}`;
+  // Reject values outside the safe cents range instead of crashing later.
+  if (!isValidAmount(amount) || !Number.isSafeInteger(Number(normalizedUnits) * 100)) return null;
+  return amount;
 }
 
 export function normalizeServiceDate(raw) {

@@ -29,10 +29,20 @@ test("normalizes amounts from common report formats", () => {
   assert.equal(normalizeAmount("125"), "125.00");
   assert.equal(normalizeAmount("125.5"), "125.50");
   assert.equal(normalizeAmount("1,250.00"), "1250.00");
+  assert.equal(normalizeAmount("1,234,567.89"), "1234567.89");
   assert.equal(normalizeAmount("0125.00"), "125.00");
   assert.equal(normalizeAmount("125.005"), null);
   assert.equal(normalizeAmount("-5.00"), null);
   assert.equal(normalizeAmount(""), null);
+  // A comma decimal or misgrouped amount must be rejected, never silently read
+  // as a 10x/100x overstatement.
+  assert.equal(normalizeAmount("1,50"), null);
+  assert.equal(normalizeAmount("1,5"), null);
+  assert.equal(normalizeAmount("1,5,0"), null);
+  assert.equal(normalizeAmount("1,50,000"), null);
+  // Cents that push the value past the safe integer range are rejected here,
+  // not left to crash packetTotal mid-import.
+  assert.equal(normalizeAmount("90071992547409.99"), null);
 });
 
 test("normalizes ISO and US-style service dates", () => {

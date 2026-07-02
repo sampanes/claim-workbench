@@ -935,3 +935,115 @@ export function searchHelpTopics(query) {
 export function renderHelpTopic(topic) {
   return [topic.title, topic.summary, ...topic.explanation.map((line) => `- ${line}`)].join("\n");
 }
+
+export const CONTEXT_ENVELOPE_VERSION = "1";
+export const DEFAULT_CONTEXT_BUDGET_BYTES = 8192;
+
+// Build the compact, redacted context envelope the assistant receives
+// (ADR-0007). Redaction is by construction: only stable identifiers,
+// codes, labels, and topic IDs are copied. Packet facts, client names,
+// and money amounts never enter the envelope unless a task-specific
+// policy adds them deliberately.
+export function buildContextEnvelope({ screen, evaluation, maxBytes = DEFAULT_CONTEXT_BUDGET_BYTES }) {
+  const findings = evaluation.findings.map((finding) => ({
+    code: finding.code,
+    severity: finding.severity,
+    helpTopicId: finding.helpTopicId ?? null
+  }));
+  const availableActions = evaluation.availableActions.map((action) => ({
+    id: action.id,
+    label: action.label,
+    helpTopicId: action.helpTopicId ?? null
+  }));
+  const topicIds = [...new Set([
+    findTopicForState(evaluation.state)?.id,
+    ...findings.map((finding) => finding.helpTopicId),
+    ...availableActions.map((action) => action.helpTopicId)
+  ].filter(Boolean))];
+
+  const envelope = {
+    contextVersion: CONTEXT_ENVELOPE_VERSION,
+    screen,
+    state: evaluation.state,
+    mode: evaluation.mode ?? null,
+    step: evaluation.nextStep
+      ? { id: evaluation.nextStep.id, label: evaluation.nextStep.label, helpTopicId: evaluation.nextStep.helpTopicId ?? null }
+      : null,
+    findings,
+    availableActions,
+    helpTopics: topicIds
+  };
+
+  const bytes = new TextEncoder().encode(JSON.stringify(envelope)).length;
+  if (bytes > maxBytes) {
+    throw new Error(`Context envelope is ${bytes} bytes, over the ${maxBytes}-byte budget.`);
+  }
+  return envelope;
+}
+
+// Deterministic no-model assistance: render what the envelope supports and
+// nothing else. A model may rephrase this text; it cannot add actions the
+// envelope does not contain, and unsupported questions get an explicit
+// insufficient-context answer instead of an invented one.
+export function renderNoModelAnswer(envelope, question = null) {
+  const lines = [];
+  const citations = new Set();
+
+  if (question !== null) {
+    const normalized = String(question).toLowerCase();
+    const matchedAction = envelope.availableActions.find((action) =>
+      normalized.includes(action.label.toLowerCase()) || normalized.includes(action.id.replaceAll("_", " ")));
+    const matchedTopic = envelope.helpTopics
+      .map((id) => getHelpTopic(id))
+      .filter(Boolean)
+      .find((topic) => normalized.includes(topic.title.toLowerCase()));
+    if (!matchedAction && !matchedTopic) {
+      return {
+        answer: "The supplied context does not cover that question. Use the workflow help topics, or ask about the current step, findings, or available actions.",
+        citations: []
+      };
+    }
+    if (matchedAction) {
+      const topic = getHelpTopic(matchedAction.helpTopicId);
+      if (topic) {
+        citations.add(topic.id);
+        lines.push(renderHelpTopic(topic));
+      } else {
+        lines.push(`${matchedAction.label} is currently available.`);
+      }
+    } else {
+      citations.add(matchedTopic.id);
+      lines.push(renderHelpTopic(matchedTopic));
+    }
+    return { answer: lines.join("\n"), citations: [...citations] };
+  }
+
+  lines.push(`Current state: ${envelope.state}.`);
+  const stateTopic = findTopicForState(envelope.state);
+  if (stateTopic) {
+    citations.add(stateTopic.id);
+    lines.push(stateTopic.summary);
+  }
+  if (envelope.step) {
+    lines.push(`Next step: ${envelope.step.label}.`);
+    if (envelope.step.helpTopicId) citations.add(envelope.step.helpTopicId);
+  }
+  for (const finding of envelope.findings) {
+    const topic = finding.helpTopicId ? getHelpTopic(finding.helpTopicId) : null;
+    if (topic) {
+      citations.add(topic.id);
+      lines.push(`Finding ${finding.code} (${finding.severity}): ${topic.summary}`);
+    } else {
+      lines.push(`Finding ${finding.code} (${finding.severity}).`);
+    }
+  }
+  if (envelope.availableActions.length > 0) {
+    lines.push(`Available actions: ${envelope.availableActions.map((action) => action.label).join(", ")}.`);
+    for (const action of envelope.availableActions) {
+      if (action.helpTopicId) citations.add(action.helpTopicId);
+    }
+  } else {
+    lines.push("No actions are available in this state.");
+  }
+  return { answer: lines.join("\n"), citations: [...citations] };
+}

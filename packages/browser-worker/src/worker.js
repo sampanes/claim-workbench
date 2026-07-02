@@ -4,12 +4,14 @@
 // nothing here can bypass an approval gate.
 
 import {
+  evidenceDigest,
   makeFinding,
   makeWorkerResult,
   modeAtLeast,
   sha256Hex,
   utcNow,
   validateWorkerCommand,
+  verifyApprovalToken,
   WORKER_COMMANDS
 } from "@claim-workbench/core";
 import { classifyPage } from "./classify.js";
@@ -44,12 +46,31 @@ export class BrowserWorker {
   // session filled and nothing an operator entered by hand.
   #addedRowSignatures = new Map();
 
-  constructor({ driver, recipe, facts, diagnosticMode = false, clock = Date }) {
+  #approvalSecret;
+  #usedApprovalTokenIds = new Set();
+
+  constructor({ driver, recipe, facts, approvalSecret = null, diagnosticMode = false, clock = Date }) {
     this.#driver = driver;
     this.#recipe = recipe;
     this.#facts = facts;
+    this.#approvalSecret = approvalSecret;
     this.#clock = clock;
     this.#diagnosticMode = diagnosticMode;
+  }
+
+  // The exact facts an approval must be bound to before submission: the
+  // recognized page, the observed identity, every observed row, and the
+  // observed total. Any change to these changes the digest.
+  submitEvidence() {
+    const { page, classification } = this.#classify();
+    if (!page || classification.pageId !== "review") return null;
+    const evidence = {
+      pageId: classification.pageId,
+      memberId: controlByName(page, "memberId")?.value ?? null,
+      rows: observedRows(page).map(rowSignature),
+      observedTotal: controlByName(page, "portalTotal")?.value ?? null
+    };
+    return { evidence, digest: evidenceDigest(evidence) };
   }
 
   pause() { this.#paused = true; }
@@ -432,6 +453,108 @@ export class BrowserWorker {
           evidence: { ...evidence, removedRows: removed },
           nextActions: ["fill_service_rows", "read_page"]
         });
+    }
+
+    if (command.action === "submit") {
+      // Verification happens before any portal interaction: a missing,
+      // expired, reused, rescoped, or evidence-mismatched approval means
+      // nothing is sent.
+      const current = this.submitEvidence();
+      if (!current) {
+        return this.#result(command, "blocked", "Submission requires the review page.", {
+          findings: [makeFinding("PAGE_UNKNOWN", { data: { expected: "review" } })]
+        });
+      }
+      if (this.#approvalSecret === null) {
+        return this.#result(command, "blocked", "This worker session has no approval verifier configured; submission is disabled.", {
+          findings: [makeFinding("APPROVAL_REQUIRED")]
+        });
+      }
+      const verdict = verifyApprovalToken({
+        token: command.approvalToken,
+        secret: this.#approvalSecret,
+        expected: {
+          action: "submit",
+          packetId: command.packetId,
+          runId: command.runId,
+          stepId: command.stepId,
+          destinationClass: "review",
+          evidenceDigest: current.digest
+        },
+        clock: this.#clock,
+        usedTokenIds: this.#usedApprovalTokenIds
+      });
+      if (!verdict.ok) {
+        return this.#result(command, "blocked", `Submission did not run: ${verdict.message}`, {
+          evidence: { evidenceDigest: current.digest, submitted: false },
+          findings: [makeFinding(verdict.code)],
+          nextActions: ["request_approval", "read_page"]
+        });
+      }
+
+      const baseFields = this.#addFormFields(page, "/portal/claim/submit");
+      if (!baseFields) {
+        return this.#result(command, "failed", "The review page has no submit form.", {
+          findings: [makeFinding("TARGET_NOT_FOUND", { data: { target: "submit form" } })]
+        });
+      }
+      await this.#driver.submitForm("/portal/claim/submit", { ...baseFields, confirm: "yes" });
+      const status = this.#driver.currentStatus();
+      if (status === 409) {
+        return this.#result(command, "failed",
+          "The destination rejected the submission as a duplicate. Capture the existing receipt instead of retrying.", {
+            evidence: { submitted: false, evidenceDigest: current.digest },
+            findings: [makeFinding("DUPLICATE_SUBMISSION")],
+            nextActions: ["capture_receipt", "mark_manual"]
+          });
+      }
+      if (status >= 400) {
+        return this.#result(command, "failed", `The destination rejected the submission (HTTP ${status}).`, {
+          evidence: { submitted: false, evidenceDigest: current.digest }
+        });
+      }
+      const after = this.#classify();
+      const receiptId = controlByName(after.page, "confirmationNumber")?.value ?? null;
+      if (after.classification.pageId !== "receipt" || !receiptId) {
+        return this.#result(command, "failed",
+          "Submission was sent but no receipt page was observed; treat this packet as manual until the receipt is located.", {
+            evidence: { submitted: true, receiptObserved: false },
+            findings: [makeFinding("RECEIPT_MISSING")],
+            nextActions: ["mark_manual"]
+          });
+      }
+      return this.#result(command, "succeeded",
+        `Submitted with approval ${verdict.tokenId}; the destination issued confirmation ${receiptId}.`, {
+          evidence: {
+            submitted: true,
+            approvalTokenId: verdict.tokenId,
+            evidenceDigest: current.digest,
+            receiptId,
+            observedTotal: controlByName(after.page, "portalTotal")?.value ?? null
+          },
+          nextActions: ["capture_receipt"]
+        });
+    }
+
+    if (command.action === "captureReceipt") {
+      const receiptId = controlByName(page, "confirmationNumber")?.value ?? null;
+      if (!receiptId) {
+        return this.#result(command, "failed", "No confirmation number is observed on this page.", {
+          findings: [makeFinding("RECEIPT_MISSING")]
+        });
+      }
+      const html = this.#driver.currentHtml() ?? "";
+      return this.#result(command, "succeeded", `Captured receipt ${receiptId}.`, {
+        evidence: {
+          receiptId,
+          memberId: controlByName(page, "memberId")?.value ?? null,
+          observedTotal: controlByName(page, "portalTotal")?.value ?? null,
+          contentSha256: sha256Hex(html),
+          capturedAt: utcNow(this.#clock),
+          url: page.url
+        },
+        nextActions: ["complete"]
+      });
     }
 
     return this.#result(command, "failed", `The action ${command.action} is not implemented yet.`);

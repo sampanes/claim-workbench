@@ -91,12 +91,24 @@ export {
 } from "./artifacts.js";
 
 export {
+  CONTEXT_ENVELOPE_VERSION,
+  DEFAULT_CONTEXT_BUDGET_BYTES,
+  buildContextEnvelope,
   findTopicForFinding,
   findTopicForState,
   getHelpTopic,
   helpTopics,
   renderHelpTopic,
+  renderNoModelAnswer,
   searchHelpTopics
 } from "./assistance.js";
+
+export {
+  APPROVAL_TOKEN_VERSION,
+  DEFAULT_APPROVAL_TTL_MS,
+  evidenceDigest,
+  issueApprovalToken,
+  verifyApprovalToken
+} from "./approval.js";
 
 export { syntheticPacket } from "./synthetic.js";

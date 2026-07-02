@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claim-workbench.dev/schemas/context-envelope.schema.json",
+  "title": "ContextEnvelope",
+  "description": "The compact, redacted context the assistant receives (ADR-0007): current workflow state, findings, available actions, and retrieved help-topic IDs. Packet facts and protected values are excluded by construction.",
+  "type": "object",
+  "required": ["contextVersion", "screen", "state", "findings", "availableActions", "helpTopics"],
+  "properties": {
+    "contextVersion": { "const": "1" },
+    "screen": { "type": "string", "minLength": 1 },
+    "state": { "type": "string", "minLength": 1 },
+    "mode": { "type": ["string", "null"] },
+    "step": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["id", "label"],
+          "properties": {
+            "id": { "type": "string" },
+            "label": { "type": "string" },
+            "helpTopicId": { "type": ["string", "null"] }
+          }
+        }
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "severity"],
+        "properties": {
+          "code": { "type": "string" },
+          "severity": { "enum": ["notice", "warning", "hard_stop"] },
+          "helpTopicId": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "availableActions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "helpTopicId": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "helpTopics": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -7,7 +7,7 @@ and user-experience checks.
 
 ## Target Experience
 
-A fresh checkout should eventually support:
+A fresh checkout supports:
 
 ```sh
 git clone https://github.com/sampanes/claim-workbench.git
@@ -16,7 +16,7 @@ cd claim-workbench
 ./scripts/verify-macos.sh
 ```
 
-These scripts will be added with the first executable prototype.
+Both scripts live in `scripts/`.
 
 ## Bootstrap Contract
 

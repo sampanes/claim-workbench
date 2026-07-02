@@ -104,13 +104,15 @@ Potential duplicates are reviewable records, not silently discarded data.
 
 ## Repository Shape
 
-The intended top-level layout is:
+The top-level layout is:
 
 ```text
 apps/
   macos/
+  workbench/
 packages/
   core/
+  service/
   browser-worker/
 examples/
   synthetic-eap/

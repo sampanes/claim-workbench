@@ -7,6 +7,7 @@
 
 import http from "node:http";
 import { createHash, randomUUID } from "node:crypto";
+import { pathToFileURL } from "node:url";
 
 const PORTAL_TITLE = "Synthetic EAP Portal";
 const LOGIN_PASSWORD = "synthetic";
@@ -329,7 +330,7 @@ export function startFakePortal({ port = 0 } = {}) {
   });
 }
 
-if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1].replaceAll("\\", "/")}`).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const portArg = process.argv.indexOf("--port");
   const port = portArg === -1 ? 8787 : Number(process.argv[portArg + 1]);
   const portal = await startFakePortal({ port });

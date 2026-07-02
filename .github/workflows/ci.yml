@@ -21,6 +21,9 @@ jobs:
       - run: corepack enable pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r test
+      # Coverage totals on one leg; the other legs already run the same tests.
+      - run: pnpm -r test:coverage
+        if: matrix.os == 'ubuntu-latest'
       - run: pnpm -r build
 
   macos-app:

@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-Claim Workbench contains a portable TypeScript core, a Node-based browser
+Claim Workbench contains a portable JavaScript (ES module) core, a Node-based browser
 worker, and a native SwiftUI application. Contributors need reproducible builds
 across development machines and CI without maintaining separate repositories or
 conflicting dependency locks.

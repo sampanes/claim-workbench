@@ -102,7 +102,7 @@ Licensed under the [Apache License 2.0](LICENSE).
 ## Running It
 
 ```sh
-corepack enable pnpm
+corepack enable pnpm   # Windows: needs an elevated shell once; or prefix commands with `corepack pnpm ...`
 pnpm install
 pnpm -r test          # every package's test suite
 pnpm -r build         # syntax checks and the browser bundle

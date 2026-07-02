@@ -106,6 +106,13 @@ surface. Milestone 8 and Milestone 9 remain the next major roadmap items.
   case call `corepack pnpm -r <script>` directly.
 - The fake portal's suggested port 8787 may already be taken locally; use
   `--port <other>` if `EADDRINUSE` appears.
+- A repo-wide cross-platform sweep found no further live issues of the
+  `URL.pathname` class: file paths consistently go through `fileURLToPath`,
+  readline uses `crlfDelay: Infinity`, spawns use argv arrays, and artifact
+  filenames are a deliberate forward-slash virtual convention translated at
+  every filesystem boundary. Two latent notes: the CSV parser keeps a literal
+  `\r` inside quoted multi-line fields (no current fixture exercises this),
+  and fixture line endings are not pinned by a `.gitattributes`.
 
 ## What's Next
 

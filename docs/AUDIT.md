@@ -101,6 +101,9 @@ surface. Milestone 8 and Milestone 9 remain the next major roadmap items.
 - Caveat for the README's `corepack enable pnpm` step: it needs an elevated
   shell on Windows (EPERM writing shims into `C:\Program Files\nodejs`).
   Non-admin workaround: prefix commands with `corepack pnpm ...` instead.
+  Note that the root wrapper scripts (`verify`, `test:coverage`) re-invoke
+  `pnpm -r` internally, which fails when corepack is not enabled; in that
+  case call `corepack pnpm -r <script>` directly.
 - The fake portal's suggested port 8787 may already be taken locally; use
   `--port <other>` if `EADDRINUSE` appears.
 
@@ -134,9 +137,12 @@ surface. Milestone 8 and Milestone 9 remain the next major roadmap items.
 
 1. **Add an always-current status/audit document.** Done in this file so future
    contributors can quickly orient themselves without reading every ADR.
-2. **Add machine-readable coverage totals to CI output.** The current tests are
-   extensive, but coverage is not reported. Node's built-in test coverage or
-   `c8` would make regression risk easier to track.
+2. **Add machine-readable coverage totals to CI output.** Done: each library
+   package has a `test:coverage` script using Node's built-in coverage, plus a
+   root `pnpm test:coverage` wrapper. Baseline line coverage (2026-07-02):
+   core 95.2%, service 85.8%, browser-worker 68.5% (the lazily-loaded
+   Playwright driver is exercised only in visible browser sessions, which
+   accounts for most of the worker's uncovered lines).
 3. **Add root-level convenience scripts for macOS verification.** The Swift app
    has its own CI job, but `pnpm verify` does not exercise `swift build` or
    `swift test`; a documented `verify:macos` helper would reduce contributor
@@ -144,8 +150,10 @@ surface. Milestone 8 and Milestone 9 remain the next major roadmap items.
 4. **Add a small architecture diagram.** The text docs are thorough; one diagram
    showing app, service, core, worker, fake portal, artifacts, and SQLite would
    speed onboarding.
-5. **Add sample stdio transcripts.** The protocol is documented and tested, but
-   checked-in request/response examples would help adapter and app developers.
+5. **Add sample stdio transcripts.** Done: see
+   [STDIO_TRANSCRIPT.md](STDIO_TRANSCRIPT.md), generated from a real session
+   by `node scripts/generate-stdio-transcript.mjs` (also `pnpm
+   stdio:transcript`), covering the happy path and both error shapes.
 6. **Expand browser-shell smoke coverage.** The browser app builds and has
    synthetic-data checks, but a lightweight DOM or Playwright smoke test could
    catch UI regressions before Milestone 8 work begins.

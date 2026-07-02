@@ -9,6 +9,8 @@
     "bootstrap": "pnpm install --frozen-lockfile",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
+    "test:coverage": "pnpm -r test:coverage",
+    "stdio:transcript": "node scripts/generate-stdio-transcript.mjs",
     "verify": "pnpm test && pnpm build"
   }
 }

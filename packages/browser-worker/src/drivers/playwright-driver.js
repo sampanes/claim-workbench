@@ -26,27 +26,70 @@ export async function createPlaywrightDriver({ headless = false } = {}) {
 
   let currentModel = null;
   let currentHtml = null;
+  let lastStatus = 200;
+
+  // The worker relies on real HTTP status to detect rejections (>=400) and
+  // duplicate submissions (409). Record the status of each top-level document
+  // navigation so currentStatus() reports fact, not a hardcoded 200.
+  page.on("response", (response) => {
+    if (response.request().isNavigationRequest() && response.frame() === page.mainFrame()) {
+      lastStatus = response.status();
+    }
+  });
 
   async function snapshot() {
     currentHtml = await page.content();
     currentModel = parsePage({ url: page.url(), html: currentHtml });
-    return { page: currentModel, html: currentHtml, status: 200 };
+    return { page: currentModel, html: currentHtml, status: lastStatus };
   }
 
   return {
     async open(url) {
-      await page.goto(url, { waitUntil: "load" });
+      const response = await page.goto(url, { waitUntil: "load" });
+      if (response) lastStatus = response.status();
       return snapshot();
     },
     async submitForm(action, fields) {
-      // Fill visible fields, then submit the form that posts to `action`.
+      const forms = page.locator(`form[action="${action}"]`);
+      const formCount = await forms.count();
+      // When several forms post to the same action (e.g. a per-row Remove
+      // button), submit the one whose hidden inputs match the discriminator
+      // fields. `.first()` would always act on the first row on the page and
+      // silently remove the wrong — possibly operator-entered — row.
+      let form = forms.first();
+      for (let i = 0; formCount > 1 && i < formCount; i += 1) {
+        const candidate = forms.nth(i);
+        let matches = true;
+        for (const [name, value] of Object.entries(fields)) {
+          const hidden = candidate.locator(`input[type="hidden"][name="${name}"]`);
+          if (await hidden.count()) {
+            if ((await hidden.first().getAttribute("value")) !== String(value)) { matches = false; break; }
+          }
+        }
+        if (matches) { form = candidate; break; }
+      }
+      // Apply each field to its control within the chosen form. Checkboxes and
+      // radios are toggled (fill() throws on them); buttons are left for the
+      // submit click below.
       for (const [name, value] of Object.entries(fields)) {
-        const locator = page.locator(`[name="${name}"]:not([type="hidden"])`);
-        if (await locator.count()) await locator.first().fill(String(value));
+        const control = form.locator(`[name="${name}"]:not([type="hidden"])`);
+        if (!(await control.count())) continue;
+        const first = control.first();
+        const info = await first.evaluate((el) => ({
+          tag: el.tagName.toLowerCase(),
+          type: (el.getAttribute("type") || "").toLowerCase()
+        }));
+        if (info.tag === "button") continue;
+        if (info.type === "checkbox" || info.type === "radio") {
+          if (value === false || value === "" || value === "off" || value === "no") await first.uncheck();
+          else await first.check();
+        } else {
+          await first.fill(String(value));
+        }
       }
       await Promise.all([
         page.waitForLoadState("load"),
-        page.locator(`form[action="${action}"] [type=submit], form[action="${action}"] button`).first().click()
+        form.locator("[type=submit], button").first().click()
       ]);
       return snapshot();
     },
@@ -57,7 +100,7 @@ export async function createPlaywrightDriver({ headless = false } = {}) {
       return currentHtml;
     },
     currentStatus() {
-      return 200;
+      return lastStatus;
     },
     async highlight(controlName) {
       await page.locator(`[name="${controlName}"]`).first().evaluate((element) => {

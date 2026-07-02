@@ -103,3 +103,13 @@ export function hmacSha256Hex(key, message) {
   outerInput.set(innerHash, 64);
   return bytesToHex(sha256Bytes(outerInput));
 }
+
+// Constant-time equality for equal-length hex strings (e.g. HMAC digests), so
+// signature checks do not leak byte positions through the early-exit timing of
+// a plain `===`/`!==` string comparison.
+export function timingSafeEqualHex(a, b) {
+  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i += 1) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}

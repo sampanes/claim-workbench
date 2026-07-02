@@ -16,6 +16,14 @@ export const MAPPING_VERSION = "1";
 const REQUIRED_COLUMN_KEYS = ["clientId", "clientName", "serviceDate", "code", "amount"];
 const OPTIONAL_COLUMN_KEYS = ["description", "units", "sourceId"];
 
+// Deterministic, locale-independent string ordering. localeCompare varies
+// across ICU builds and OS locales, which would make service-line order — and
+// thus the packet fingerprint and the service_N ids derived from it —
+// non-reproducible across Node/browser/test environments.
+function compareCodePoints(a, b) {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
 export function validateMapping(mapping) {
   const findings = [];
   if (typeof mapping !== "object" || mapping === null) {
@@ -48,15 +56,20 @@ export function normalizeAmount(raw) {
   if (typeof raw !== "string") return null;
   let value = raw.trim();
   if (value.startsWith("$")) value = value.slice(1).trim();
-  value = value.replaceAll(",", "");
-  if (!/^\d+(\.\d{1,2})?$/.test(value)) return null;
+  // Commas are accepted only as US thousands separators in well-formed groups
+  // ("1,250.00"). Stripping every comma would silently read a comma-decimal
+  // like "1,50" as 150.00, and misgrouped "1,5,0" as 150.00 (ADR-0003).
+  if (/^\d{1,3}(,\d{3})+(\.\d{1,2})?$/.test(value)) value = value.replaceAll(",", "");
+  else if (!/^\d+(\.\d{1,2})?$/.test(value)) return null;
   const [units, cents = ""] = value.split(".");
   // Strip leading zeros lexically; never route domain money through
   // binary floating point (ADR-0003).
   const normalizedUnits = units.replace(/^0+(?=\d)/, "");
-  const amount = `${normalizedUnits}.${cents.padEnd(2, "0")}`;
-  // Reject values outside the safe cents range instead of crashing later.
-  if (!isValidAmount(amount) || !Number.isSafeInteger(Number(normalizedUnits) * 100)) return null;
+  const paddedCents = cents.padEnd(2, "0");
+  const amount = `${normalizedUnits}.${paddedCents}`;
+  // Reject values outside the safe cents range — units AND cents — instead of
+  // letting packetTotal throw and abort the whole import later.
+  if (!isValidAmount(amount) || !Number.isSafeInteger(Number(normalizedUnits) * 100 + Number(paddedCents))) return null;
   return amount;
 }
 
@@ -211,9 +224,9 @@ export function importCsv({ csvText, mapping, sourceName, importedAt, idFactory 
   for (const group of sortedClients) {
     group.lines.sort((a, b) =>
       compareIsoDates(a.serviceDate, b.serviceDate) ||
-      a.code.localeCompare(b.code) ||
-      a.amount.amount.localeCompare(b.amount.amount) ||
-      (a.sourceId ?? "").localeCompare(b.sourceId ?? "")
+      compareCodePoints(a.code, b.code) ||
+      compareCodePoints(a.amount.amount, b.amount.amount) ||
+      compareCodePoints(a.sourceId ?? "", b.sourceId ?? "")
     );
     const serviceLines = group.lines.map((line, index) => ({
       id: `service_${index + 1}`,

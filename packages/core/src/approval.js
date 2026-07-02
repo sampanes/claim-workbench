@@ -7,7 +7,7 @@
 import { canonicalJson } from "./canonical-json.js";
 import { utcNow } from "./dates.js";
 import { newId } from "./ids.js";
-import { hmacSha256Hex, sha256Hex } from "./sha256.js";
+import { hmacSha256Hex, sha256Hex, timingSafeEqualHex } from "./sha256.js";
 
 export const APPROVAL_TOKEN_VERSION = "1";
 export const DEFAULT_APPROVAL_TTL_MS = 5 * 60 * 1000;
@@ -79,7 +79,7 @@ export function verifyApprovalToken({ token, secret, expected, clock = Date, use
   if (typeof token !== "object" || token.tokenVersion !== APPROVAL_TOKEN_VERSION || typeof token.mac !== "string") {
     return failure("APPROVAL_BAD_SIGNATURE", "The approval token is malformed or from an unsupported version.");
   }
-  if (hmacSha256Hex(secret, tokenPayload(token)) !== token.mac) {
+  if (!timingSafeEqualHex(hmacSha256Hex(secret, tokenPayload(token)), token.mac)) {
     return failure("APPROVAL_BAD_SIGNATURE", "The approval token failed signature verification.");
   }
   if (usedTokenIds?.has(token.tokenId)) {

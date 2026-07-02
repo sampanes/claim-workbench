@@ -13,6 +13,7 @@ replacing implementation documentation.
 - [ADR-0005: Local Security and Data Lifecycle](0005-local-security-and-data-lifecycle.md)
 - [ADR-0006: License and Releases](0006-license-and-releases.md)
 - [ADR-0007: Contextual Assistance Architecture](0007-contextual-assistance-architecture.md)
+- [ADR-0008: Worker Page Drivers](0008-worker-page-drivers.md)
 
 ## Format
 

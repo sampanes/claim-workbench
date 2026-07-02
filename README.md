@@ -44,12 +44,16 @@ not an AI decision.
 
 ## Development Status
 
-The project is in its initial architecture and prototype phase. The first
-milestone will prove this workflow:
+Roadmap milestones 0 through 7 are implemented in the portable stack, and
+the first complete proof runs end to end against the synthetic portal in
+the automated test suite:
 
 ```text
-import -> normalize -> validate -> generate -> assist -> verify -> approve
+import -> normalize -> validate -> generate -> assist -> approve -> receipt
 ```
+
+The native macOS workbench (Milestone 8) is a compiled placeholder shell;
+the adapter SDK (Milestone 9) is not started.
 
 See [Architecture](docs/ARCHITECTURE.md),
 [architecture decisions](docs/adr/README.md),
@@ -63,27 +67,45 @@ See [Architecture](docs/ARCHITECTURE.md),
 
 Licensed under the [Apache License 2.0](LICENSE).
 
-## Prototype Skeleton
+## Repository Layout
 
-This repository now includes a Milestone 0 executable skeleton:
+- `packages/core` — the portable domain: packet schema and validation with
+  stable finding codes, decimal-string money, CSV import and duplicate
+  detection, versioned recipes, the auditable workflow state machine,
+  artifact manifests and freshness, approval tokens, the worker protocol,
+  and contextual assistance (help topics, redacted context envelopes,
+  no-model rendering). Includes the `claim-validate` command-line packet
+  validator.
+- `packages/service` — the local service that owns SQLite persistence,
+  artifact storage, approval issuance, and receipts, exposed as typed
+  operations and as one JSON message per line over stdio (ADR-0002).
+- `packages/browser-worker` — the worker process: page classification that
+  requires URL, title, text, and controls to agree, read-only and
+  reversible commands with expected-versus-observed evidence, approval
+  verification before submission, and pause/emergency stop. Drivers share
+  one observation surface (ADR-0008): an HTTP driver used by the tests and
+  a lazily-loaded Playwright driver for visible browser sessions.
+- `apps/workbench` — a dependency-light browser shell that drives the real
+  core state machine on synthetic data: recipe-ordered steps, findings
+  with recorded overrides, approval-gated submission, contextual help, and
+  the audit history.
+- `apps/macos` — the SwiftUI application shell, compiled and tested by the
+  macOS CI job.
+- `examples/synthetic-eap` — synthetic source reports, column mapping, and
+  the workflow recipe. `examples/fake-portal` — the local synthetic claim
+  portal used for end-to-end tests.
+- `schemas/` — versioned JSON Schema contracts for packets, findings,
+  recipes, worker commands and results, approval tokens, artifact
+  manifests, audit events, and assistance context envelopes.
 
-- `packages/core` contains deterministic domain types, a synthetic billing
-  packet, decimal-string total calculation, and no-model help-topic rendering.
-- `apps/workbench` contains a dependency-light portable browser workbench shell
-  styled to feel at home on macOS while still running in any modern browser.
-- `scripts/bootstrap-macos.sh` and `scripts/verify-macos.sh` provide the first
-  bootstrap and verification entry points described in the macOS setup docs.
-
-Run the portable prototype with:
+## Running It
 
 ```sh
 corepack enable pnpm
 pnpm install
-pnpm --filter @claim-workbench/workbench dev
-```
-
-Verify the current skeleton with:
-
-```sh
-pnpm verify
+pnpm -r test          # every package's test suite
+pnpm -r build         # syntax checks and the browser bundle
+pnpm --filter @claim-workbench/workbench dev   # interactive shell at http://localhost:5173
+node examples/fake-portal/server.mjs --port 8787   # synthetic portal (password: synthetic)
+node packages/core/src/cli.js packages/core/fixtures/valid-packet.json   # CLI validator
 ```

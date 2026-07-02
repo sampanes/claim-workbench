@@ -1,0 +1,23 @@
+{
+  "name": "total-mismatch-hard-stop",
+  "question": "Why do the totals not match?",
+  "maxBytes": 4096,
+  "requiredCitations": ["finding.total_mismatch"],
+  "prohibitedPhrases": ["Submit claim"],
+  "expectInsufficient": false,
+  "envelope": {
+    "contextVersion": "1",
+    "screen": "workflow",
+    "state": "FieldsFilled",
+    "mode": "RunReversibleSteps",
+    "step": { "id": "verify-total", "label": "Compare totals", "helpTopicId": "action.compare_totals" },
+    "findings": [
+      { "code": "TOTAL_MISMATCH", "severity": "hard_stop", "helpTopicId": "finding.total_mismatch" }
+    ],
+    "availableActions": [
+      { "id": "compare_totals", "label": "Compare totals", "helpTopicId": "action.compare_totals" },
+      { "id": "mark_manual", "label": "Handle manually", "helpTopicId": "action.mark_manual" }
+    ],
+    "helpTopics": ["finding.total_mismatch", "action.compare_totals", "action.mark_manual"]
+  }
+}

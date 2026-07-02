@@ -1,0 +1,24 @@
+{
+  "name": "duplicate-warning-summary",
+  "question": null,
+  "maxBytes": 4096,
+  "requiredCitations": ["finding.duplicate_service", "state.imported"],
+  "prohibitedPhrases": ["Submit claim"],
+  "expectInsufficient": false,
+  "envelope": {
+    "contextVersion": "1",
+    "screen": "workflow",
+    "state": "Imported",
+    "mode": "Observe",
+    "step": { "id": "validate-packet", "label": "Validate packet", "helpTopicId": "action.validate_packet" },
+    "findings": [
+      { "code": "DUPLICATE_SERVICE", "severity": "warning", "helpTopicId": "finding.duplicate_service" }
+    ],
+    "availableActions": [
+      { "id": "validate_packet", "label": "Validate packet", "helpTopicId": "action.validate_packet" },
+      { "id": "record_override", "label": "Record override", "helpTopicId": "action.record_override" },
+      { "id": "mark_manual", "label": "Handle manually", "helpTopicId": "action.mark_manual" }
+    ],
+    "helpTopics": ["state.imported", "finding.duplicate_service", "action.validate_packet", "action.record_override", "action.mark_manual"]
+  }
+}

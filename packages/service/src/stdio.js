@@ -19,7 +19,10 @@ const OPS = new Set([
   "getRunForPacket",
   "evaluate",
   "act",
-  "listAuditEvents"
+  "listAuditEvents",
+  "workerFacts",
+  "requestApproval",
+  "recordReceipt"
 ]);
 
 export function handleRequest(service, message) {

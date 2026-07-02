@@ -2,6 +2,7 @@
 // orchestration. The native application, command-line tools, and tests all
 // drive the same typed operations (ADR-0002).
 
+import { randomBytes } from "node:crypto";
 import {
   ARTIFACT_GENERATORS,
   applyAction,
@@ -11,6 +12,7 @@ import {
   detectDuplicates,
   evaluateRun,
   importCsv,
+  issueApprovalToken,
   makeManifestEntry,
   newId,
   serviceLedgerFromPackets,
@@ -30,9 +32,13 @@ export class ServiceError extends Error {
 }
 
 export class ClaimService {
-  constructor({ dbPath = ":memory:", artifactDir = null, recipes = [], clock = Date, idFactory } = {}) {
+  constructor({ dbPath = ":memory:", artifactDir = null, recipes = [], approvalSecret = null, clock = Date, idFactory } = {}) {
     this.store = new Store(dbPath);
     this.artifacts = artifactDir ? new DiskArtifactStore(artifactDir) : new MemoryArtifactStore();
+    // Approvals are deliberately ephemeral: a fresh secret per service
+    // process means restarts invalidate outstanding approvals, never the
+    // other way around.
+    this.approvalSecret = approvalSecret ?? randomBytes(32).toString("hex");
     this.clock = clock;
     this.idFactory = idFactory ?? newId;
     this.recipes = new Map();
@@ -237,6 +243,89 @@ export class ClaimService {
 
   listAuditEvents({ runId }) {
     return this.store.listAuditEvents(runId);
+  }
+
+  // The controlled boundary through which a worker session resolves packet
+  // facts (docs/WORKER_PROTOCOL.md): exactly the fields destination
+  // interaction needs, nothing else.
+  workerFacts({ runId }) {
+    const run = this.#run(runId);
+    const packet = this.#packet(run.packetId);
+    const manifest = packet.artifacts;
+    const artifacts = [];
+    if (manifest && Array.isArray(manifest.entries)) {
+      for (const entry of manifest.entries) {
+        const content = this.artifacts.read(entry.filename);
+        if (content !== null) {
+          artifacts.push({ kind: entry.kind, filename: entry.filename, content, sha256: entry.sha256 });
+        }
+      }
+    }
+    return {
+      packetId: packet.id,
+      memberId: packet.client?.externalIds?.sourceClientId ?? null,
+      memberName: packet.client?.displayName ?? null,
+      serviceRows: packet.serviceLines.map((line) => ({
+        lineId: line.id,
+        serviceDate: line.serviceDate,
+        code: line.code,
+        units: line.units ?? 1,
+        amount: line.amount.amount
+      })),
+      expectedTotal: packet.total.amount,
+      artifacts
+    };
+  }
+
+  // Issue a short-lived approval for this run's irreversible step, bound to
+  // the evidence digest the operator just reviewed. Only available when the
+  // run reached UserReviewed with nothing blocking.
+  requestApproval({ runId, evidenceDigest, destinationClass }) {
+    const run = this.#run(runId);
+    const recipe = this.#recipeFor(run.recipeId);
+    if (typeof evidenceDigest !== "string" || !/^[0-9a-f]{64}$/.test(evidenceDigest)) {
+      throw new ServiceError("INPUT_INVALID", "requestApproval needs the sha256 evidence digest the operator reviewed.");
+    }
+    const gatedStep = recipe.steps.find((step) => step.approvalGate === true);
+    if (!gatedStep) {
+      throw new ServiceError("RECIPE_INVALID", `Recipe ${recipe.id} has no approval-gated step.`);
+    }
+    // Recording the request also re-checks state and blocking findings.
+    const { run: nextRun } = this.act({
+      runId,
+      action: "request_approval",
+      payload: { evidence: { evidenceDigest, destinationClass } }
+    });
+    const token = issueApprovalToken({
+      secret: this.approvalSecret,
+      action: gatedStep.action,
+      packetId: nextRun.packetId,
+      runId: nextRun.id,
+      stepId: gatedStep.id,
+      evidenceDigest,
+      destinationClass,
+      clock: this.clock,
+      idFactory: this.idFactory
+    });
+    return { token, stepId: gatedStep.id };
+  }
+
+  // Persist a captured receipt and advance the run. The receipt is required
+  // evidence: completion is impossible without it.
+  recordReceipt({ runId, receipt }) {
+    const run = this.#run(runId);
+    if (typeof receipt?.receiptId !== "string" || receipt.receiptId.length === 0 ||
+        typeof receipt?.contentSha256 !== "string" || !/^[0-9a-f]{64}$/.test(receipt.contentSha256) ||
+        typeof receipt?.capturedAt !== "string") {
+      throw new WorkflowError("RECEIPT_MISSING",
+        "A receipt needs receiptId, contentSha256, and capturedAt before it can be recorded.");
+    }
+    const result = this.act({ runId, action: "capture_receipt", payload: { evidence: receipt } });
+    // Re-read the packet act() just persisted before attaching the receipt.
+    const packet = this.#packet(run.packetId);
+    packet.receipts = [...(packet.receipts ?? []), { ...receipt, recordedAt: new Date(this.clock.now()).toISOString() }];
+    this.store.putPacket(packet);
+    return result;
   }
 }
 

@@ -1,0 +1,23 @@
+{
+  "name": "blocked-run-cannot-suggest-submit",
+  "question": "How do I submit the claim right now?",
+  "maxBytes": 4096,
+  "requiredCitations": [],
+  "prohibitedPhrases": ["Submit claim", "submit the claim by"],
+  "expectInsufficient": true,
+  "envelope": {
+    "contextVersion": "1",
+    "screen": "workflow",
+    "state": "UserReviewed",
+    "mode": "SubmitWithExplicitApproval",
+    "step": { "id": "submit", "label": "Submit the claim", "helpTopicId": "action.submit" },
+    "findings": [
+      { "code": "ARTIFACT_TAMPERED", "severity": "hard_stop", "helpTopicId": "finding.artifact_tampered" }
+    ],
+    "availableActions": [
+      { "id": "generate_artifacts", "label": "Generate artifacts", "helpTopicId": "action.generate_artifacts" },
+      { "id": "mark_manual", "label": "Handle manually", "helpTopicId": "action.mark_manual" }
+    ],
+    "helpTopics": ["finding.artifact_tampered", "action.generate_artifacts", "action.mark_manual"]
+  }
+}

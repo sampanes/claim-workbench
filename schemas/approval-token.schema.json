@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claim-workbench.dev/schemas/approval-token.schema.json",
+  "title": "ApprovalToken",
+  "description": "Short-lived approval for one irreversible action, bound to the command action, packet, run, step, evidence digest, and destination classification. Changing any bound fact invalidates the token.",
+  "type": "object",
+  "required": ["tokenVersion", "tokenId", "action", "packetId", "runId", "stepId", "evidenceDigest", "destinationClass", "issuedAt", "expiresAt", "mac"],
+  "properties": {
+    "tokenVersion": { "const": "1" },
+    "tokenId": { "type": "string", "pattern": "^approval_" },
+    "action": { "type": "string", "minLength": 1 },
+    "packetId": { "type": "string", "pattern": "^packet_" },
+    "runId": { "type": "string", "pattern": "^run_" },
+    "stepId": { "type": "string", "minLength": 1 },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "destinationClass": { "type": "string", "minLength": 1 },
+    "issuedAt": { "type": "string" },
+    "expiresAt": { "type": "string" },
+    "mac": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

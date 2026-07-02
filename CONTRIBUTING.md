@@ -28,9 +28,20 @@ portable, easier to test, or easier to configure.
 
 ## Development Workflow
 
-The initial development commands will be documented once the executable
-prototype and package layout are committed. Until then, architecture changes
-should include a concise design note or issue describing:
+```sh
+corepack enable pnpm
+pnpm install --frozen-lockfile
+pnpm -r test
+pnpm -r build
+```
+
+Every package uses the Node built-in test runner; the browser-worker tests
+start the fake portal on an ephemeral port and need no browser binaries.
+On macOS, `./scripts/verify-macos.sh` additionally builds and tests the
+SwiftUI shell.
+
+Architecture changes should include a concise design note or issue
+describing:
 
 - the workflow problem
 - the proposed interface or schema change

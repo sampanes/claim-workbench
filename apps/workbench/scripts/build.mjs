@@ -12,6 +12,11 @@ for (const name of coreFiles) {
   await copyFile(new URL(name, coreSrc), new URL(`core/${name}`, dist));
 }
 
+await copyFile(
+  new URL("../../../examples/synthetic-eap/recipe.json", import.meta.url),
+  new URL("recipe.json", dist)
+);
+
 let main = await readFile(new URL("../src/main.js", import.meta.url), "utf8");
 main = main
   .replace(/from "@claim-workbench\/core";/, 'from "./core/index.js";')

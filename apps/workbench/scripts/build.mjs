@@ -1,5 +1,5 @@
 import { mkdir, readFile, readdir, writeFile, copyFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const dist = new URL("../dist/", import.meta.url);
 const coreSrc = new URL("../../../packages/core/src/", import.meta.url);
@@ -24,4 +24,4 @@ main = main
 await writeFile(new URL("main.js", dist), main);
 await copyFile(new URL("../src/styles.css", import.meta.url), new URL("styles.css", dist));
 await writeFile(new URL("index.html", dist), `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Claim Workbench</title><link rel="stylesheet" href="./styles.css"/></head><body><div id="root"></div><script type="module" src="./main.js"></script></body></html>\n`);
-console.log(`Built ${dirname(join(dist.pathname, "index.html"))}`);
+console.log(`Built ${fileURLToPath(dist)}`);

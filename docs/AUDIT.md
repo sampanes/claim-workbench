@@ -91,6 +91,19 @@ surface. Milestone 8 and Milestone 9 remain the next major roadmap items.
   workbench packages.
 - `pnpm build` passed source checks and browser bundle generation.
 
+### Windows Verification (2026-07-02, Windows 11, Node 24.16.0)
+
+- `corepack pnpm -r test`: all 141 tests pass (core 89, browser-worker 34,
+  service 16, workbench 2).
+- `corepack pnpm -r build`: all packages build; browser bundle generated.
+- Fake portal serves `/portal` and the workbench dev server serves the bundle
+  at `http://localhost:5173`. `claim-validate` passes the fixture with exit 0.
+- Caveat for the README's `corepack enable pnpm` step: it needs an elevated
+  shell on Windows (EPERM writing shims into `C:\Program Files\nodejs`).
+  Non-admin workaround: prefix commands with `corepack pnpm ...` instead.
+- The fake portal's suggested port 8787 may already be taken locally; use
+  `--port <other>` if `EADDRINUSE` appears.
+
 ## What's Next
 
 ### Major Roadmap Work

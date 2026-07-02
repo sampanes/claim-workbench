@@ -57,6 +57,7 @@ the adapter SDK (Milestone 9) is not started.
 
 See [Architecture](docs/ARCHITECTURE.md),
 [architecture decisions](docs/adr/README.md),
+[current audit](docs/AUDIT.md),
 [contextual assistance](docs/ASSISTANCE.md),
 [Interaction model](docs/INTERACTION_MODEL.md),
 [Worker protocol](docs/WORKER_PROTOCOL.md),

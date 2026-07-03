@@ -20,3 +20,9 @@ auth-state/
 dist/
 apps/*/dist/
 packages/*/dist/
+
+# local scratch -- headless-browser profiles + screenshots.
+# These can hold real session/cookie/portal data; never commit to a public repo.
+.tmp-*
+shot_*.png
+*.scratch.html

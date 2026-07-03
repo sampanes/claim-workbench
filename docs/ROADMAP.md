@@ -171,6 +171,64 @@ This is the first complete proof:
 import -> packet -> validate -> generate -> assist -> approve -> receipt
 ```
 
+## Interim Gate: First Real-Destination Preview
+
+This gate precedes Milestone 8. It proves the portable stack against one real,
+private destination configuration before native-application work begins, and it
+establishes the boundary that keeps real deployment data out of this public
+repository.
+
+Deliver:
+
+- a private overlay for real recipes, adapters, mappings, and data, kept
+  entirely outside this public repository (a private location or ignored local
+  paths)
+- a documented data-handling boundary: the public tree holds synthetic data
+  only; all real configuration and data live in the private overlay
+- real-data and secret scanning in CI and a pre-commit hook, so no real
+  identifiers, credentials, or captured destination content can be committed here
+- one real, private destination configuration exercised end to end through the
+  dependency-light browser workbench on the operator's own machine
+
+Acceptance:
+
+```text
+private real configuration -> import -> validate -> generate -> assist -> approve -> receipt
+```
+
+The public repository must contain no real data, credentials, or captured
+destination content at any commit. The scanning checks introduced here are a
+standing requirement that the release gate depends on.
+
+## Near-Term Capability: Batch Completeness Reconciliation
+
+A deterministic completeness layer over a billing period. Packet validation
+answers "is this packet correct?"; reconciliation answers "did every item that
+should have been billed this period get a packet and reach its required state?"
+No model is involved.
+
+Deliver:
+
+- an expected-work-set input for a period: the source of record for who and what
+  should be billed, with configurable mapping like the CSV import adapter
+- deterministic coverage comparison of the expected set against the packets
+  produced for the period
+- findings for missing items (an expected entity with no packet), incomplete
+  items (a packet that has not reached its required state), and schedule notices
+  (an expected destination not advanced by its usual point in the period)
+- a period summary grouped by state, reusing the batch view and duplicate
+  fingerprints
+
+Acceptance:
+
+```text
+expected work set + period -> coverage report -> every missing or incomplete item listed
+```
+
+Tests cover a fully covered period, missing entities, entities present but not
+advanced, reordered and partial expected sets, and repeated runs producing an
+identical report.
+
 ## Milestone 8: Native macOS Workbench
 
 Deliver:
@@ -192,6 +250,25 @@ GitHub-hosted macOS CI builds and tests the application. Physical-Mac validation
 covers permissions, Finder, Quick Look or PDFKit, installed-browser behavior,
 and visual interaction quality.
 
+### Delivery Strategy
+
+Native-platform validation is the slowest feedback loop in this project, so
+Milestone 8 is delivered with explicit risk controls rather than by iterating
+directly on the target platform:
+
+- Maximize logic that macOS CI can build and test headlessly (view models, the
+  service and stdio bridge, and state handling), so most regressions are caught
+  without a physical device.
+- Prove each operator interaction flow on the cross-platform browser workbench
+  first, then port the validated flow to SwiftUI. The native application should
+  re-skin a proven interaction model, not discover it on the target platform.
+- Keep a dedicated validation device for the target platform, independent of any
+  single deployment machine, so validation is never blocked on device
+  availability.
+- Run a written physical-platform validation checklist for what CI cannot cover:
+  permissions, Finder, Quick Look or PDFKit, installed-browser behavior, and
+  visual quality.
+
 ## Milestone 9: Adapter SDK And Example Integration
 
 Deliver:
@@ -211,6 +288,10 @@ new example adapter -> compatibility suite -> visible in the native workbench
 
 Tests prove an adapter cannot bypass packet validation, approval gates, audit
 events, destination allowlists, receipt requirements, or assistance metadata.
+
+Validate recipe and adapter expressiveness against several real destination
+procedures early, not only the synthetic example, so that destination variety is
+absorbed by configuration rather than by branches in the core.
 
 ## Release Gate
 

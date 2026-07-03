@@ -20,7 +20,11 @@ await copyFile(
 let main = await readFile(new URL("../src/main.js", import.meta.url), "utf8");
 main = main
   .replace(/from "@claim-workbench\/core";/, 'from "./core/index.js";')
-  .replace('import "./styles.css";\n', "");
+  // \r?\n, not a literal "\n": a CRLF checkout (Windows core.autocrlf) leaves
+  // this line ending in \r\n, and a literal-\n match silently fails to strip
+  // it, so the browser fetches styles.css as a module import and refuses it
+  // (wrong MIME type) — the built app loads to a blank page.
+  .replace(/import "\.\/styles\.css";\r?\n/, "");
 await writeFile(new URL("main.js", dist), main);
 await copyFile(new URL("../src/styles.css", import.meta.url), new URL("styles.css", dist));
 await writeFile(new URL("index.html", dist), `<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Claim Workbench</title><link rel="stylesheet" href="./styles.css"/></head><body><div id="root"></div><script type="module" src="./main.js"></script></body></html>\n`);

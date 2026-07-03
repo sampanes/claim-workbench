@@ -23,4 +23,13 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(404); res.end("Not found");
   }
 });
+server.on("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    // Idempotent: a repeat `pnpm dev` should not crash with a stack trace,
+    // it just means the port is already spoken for (often this same server).
+    console.log("Claim Workbench: port 5173 is already in use — it may already be running at http://localhost:5173");
+    process.exit(0);
+  }
+  throw error;
+});
 server.listen(5173, "127.0.0.1", () => console.log("Claim Workbench: http://localhost:5173"));

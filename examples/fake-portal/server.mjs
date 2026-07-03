@@ -317,8 +317,10 @@ export function startFakePortal({ port = 0 } = {}) {
     notFound();
   });
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    server.once("error", reject);
     server.listen(port, "127.0.0.1", () => {
+      server.removeListener("error", reject);
       const boundPort = server.address().port;
       resolve({
         server,
@@ -332,7 +334,17 @@ export function startFakePortal({ port = 0 } = {}) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const portArg = process.argv.indexOf("--port");
-  const port = portArg === -1 ? 8787 : Number(process.argv[portArg + 1]);
-  const portal = await startFakePortal({ port });
-  console.log(`Synthetic claim portal: ${portal.url}/portal (password: "${LOGIN_PASSWORD}")`);
+  const port = portArg === -1 ? 8788 : Number(process.argv[portArg + 1]);
+  try {
+    const portal = await startFakePortal({ port });
+    console.log(`Synthetic claim portal: ${portal.url}/portal (password: "${LOGIN_PASSWORD}")`);
+  } catch (error) {
+    if (error.code === "EADDRINUSE") {
+      // Idempotent: a repeat run should not crash with a stack trace, it
+      // means something is already listening on this port.
+      console.log(`Synthetic claim portal: port ${port} is already in use — it may already be running at http://127.0.0.1:${port}/portal`);
+      process.exit(0);
+    }
+    throw error;
+  }
 }

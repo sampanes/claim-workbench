@@ -107,6 +107,6 @@ pnpm install
 pnpm -r test          # every package's test suite
 pnpm -r build         # syntax checks and the browser bundle
 pnpm --filter @claim-workbench/workbench dev   # interactive shell at http://localhost:5173
-node examples/fake-portal/server.mjs --port 8787   # synthetic portal (password: synthetic)
+node examples/fake-portal/server.mjs --port 8788   # synthetic portal (password: synthetic)
 node packages/core/src/cli.js packages/core/fixtures/valid-packet.json   # CLI validator
 ```

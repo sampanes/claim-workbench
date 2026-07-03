@@ -104,8 +104,10 @@ surface. Milestone 8 and Milestone 9 remain the next major roadmap items.
   Note that the root wrapper scripts (`verify`, `test:coverage`) re-invoke
   `pnpm -r` internally, which fails when corepack is not enabled; in that
   case call `corepack pnpm -r <script>` directly.
-- The fake portal's suggested port 8787 may already be taken locally; use
-  `--port <other>` if `EADDRINUSE` appears.
+- The fake portal's default port is now 8788 (`--port <other>` still works);
+  both it and the workbench dev server now treat `EADDRINUSE` as a no-op
+  ("already running") instead of an unhandled-exception crash, so re-running
+  either command is idempotent.
 - A repo-wide cross-platform sweep found no further live issues of the
   `URL.pathname` class: file paths consistently go through `fileURLToPath`,
   readline uses `crlfDelay: Infinity`, spawns use argv arrays, and artifact
@@ -113,6 +115,17 @@ surface. Milestone 8 and Milestone 9 remain the next major roadmap items.
   every filesystem boundary. Two latent notes: the CSV parser keeps a literal
   `\r` inside quoted multi-line fields (no current fixture exercises this),
   and fixture line endings are not pinned by a `.gitattributes`.
+- **Missed by the sweep above, found by actually loading the dev server in a
+  browser:** `pnpm build` succeeding is not the same as the bundle working.
+  `apps/workbench/scripts/build.mjs` stripped the browser-incompatible
+  `import "./styles.css";` line from `main.js` with a literal-`\n`-terminated
+  string match; on a CRLF checkout (Windows `core.autocrlf`) that line ends in
+  `\r\n`, the match silently missed, and the shipped `dist/main.js` kept the
+  import. The browser then fetched `styles.css` as a JS module and refused it
+  (strict MIME-type checking), so the app rendered a blank page. `pnpm -r test`
+  and `pnpm -r build` gave no signal — neither exercises the built bundle in an
+  actual browser. Fixed with a `\r?\n`-tolerant regex. Lesson for future
+  audits here: a green build/test run does not substitute for opening the app.
 
 ## What's Next
 

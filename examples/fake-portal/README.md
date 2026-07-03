@@ -7,10 +7,10 @@ real data: members, claims, and confirmation numbers are all invented.
 Run it standalone:
 
 ```sh
-node examples/fake-portal/server.mjs --port 8787
+node examples/fake-portal/server.mjs --port 8788
 ```
 
-Then open `http://127.0.0.1:8787/portal` and sign in with any username and
+Then open `http://127.0.0.1:8788/portal` and sign in with any username and
 the password `synthetic`.
 
 ## Pages

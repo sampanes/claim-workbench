@@ -82,15 +82,16 @@ They stay red-zone by path; the firewall refuses them.
 
 ## Making a non-billing night count
 
-No real billing session? You can still prove the whole stack end-to-end with
-zero real data, so the first *real* night is friction-free:
+No real billing session? Prove the whole stack end-to-end with zero real data in
+one command, so the first *real* night is friction-free:
 
 ```sh
-node examples/fake-portal/server.mjs --port 8788   # synthetic portal
-pnpm demo:firewall                                 # watch the wall hold
-pnpm run:real --preflight                          # confirm the launcher's checks
+pnpm rehearse
 ```
 
-That exercises the browser install, the launcher, and the firewall against the
-synthetic portal (password `synthetic`) — everything except the real login. When
-a real session happens, only step B is new.
+It boots the synthetic portal and checks each moving part: the portal comes up,
+the firewall refuses a fake patient file, the launcher's preflight passes, the
+browser auto-fills the login and lands on the portal, and a clean diagnostics
+report is written. Each step reports pass / skip / fail; nothing touches your
+real config or the report channel. (`--headless` runs it without a visible
+window.) When a real session happens, only section B is new.

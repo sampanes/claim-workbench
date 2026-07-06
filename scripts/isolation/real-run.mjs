@@ -27,11 +27,14 @@ import { RED_ZONE_DIRS } from "./policy.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, "..", "..");
-const CONFIG_PATH = join(REPO, "local-data", "run-config.json");
 const PROFILE_DIR = join(REPO, "auth-state", "browser-profile");
 
 const argv = process.argv.slice(2);
 const preflightOnly = argv.includes("--preflight");
+// --config <path> points at an alternate config (used by rehearsal mode to
+// drive the launcher with a synthetic config without touching the real one).
+const configIdx = argv.indexOf("--config");
+const CONFIG_PATH = configIdx >= 0 ? resolve(argv[configIdx + 1]) : join(REPO, "local-data", "run-config.json");
 
 // The red-zone vault the launcher provisions: real client data and the browser
 // session live here and only here. This is the writable subset of the shared

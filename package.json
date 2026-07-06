@@ -11,6 +11,8 @@
     "test": "pnpm -r test",
     "test:coverage": "pnpm -r test:coverage",
     "stdio:transcript": "node scripts/generate-stdio-transcript.mjs",
+    "hooks:install": "node scripts/isolation/install.mjs",
+    "verify:clean": "node scripts/isolation/verify-clean.mjs",
     "verify": "pnpm test && pnpm build"
   }
 }

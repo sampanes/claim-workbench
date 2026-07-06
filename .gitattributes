@@ -1,0 +1,4 @@
+# Hook shim and shell scripts must stay LF or they break on macOS/Linux
+# (a CRLF `#!/bin/sh` yields "bad interpreter: /bin/sh^M").
+scripts/githooks/pre-commit text eol=lf
+*.sh text eol=lf

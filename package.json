@@ -13,6 +13,7 @@
     "stdio:transcript": "node scripts/generate-stdio-transcript.mjs",
     "hooks:install": "node scripts/isolation/install.mjs",
     "verify:clean": "node scripts/isolation/verify-clean.mjs",
+    "demo:firewall": "node scripts/isolation/demo-firewall.mjs",
     "run:real": "node scripts/isolation/real-run.mjs",
     "verify": "pnpm test && pnpm build"
   }

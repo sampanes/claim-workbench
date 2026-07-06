@@ -93,6 +93,7 @@ the wall can never drift apart.
 
 | Do this | Command | What it proves |
 | --- | --- | --- |
+| Check readiness | `pnpm doctor` | Green/red board of what's set up vs. still needed on this machine (see the [Mac runbook](MAC_RUNBOOK.md)). Read-only; never reads a password. |
 | Install the guard | `pnpm hooks:install` | Wires the pre-commit firewall via `core.hooksPath`. Every other step below refuses to run until this is done. |
 | Watch the wall hold | `pnpm demo:firewall` | Stages a fake patient file (fake name + fake SSN), tries to commit it, shows the block, and cleans up. Exit 0 = the wall held. |
 | Audit what's staged | `pnpm verify:clean` | Runs the same scan the firewall runs, on demand, so you can check by hand before committing. |

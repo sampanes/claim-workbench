@@ -63,7 +63,8 @@ See [Architecture](docs/ARCHITECTURE.md),
 [Worker protocol](docs/WORKER_PROTOCOL.md),
 [roadmap](docs/ROADMAP.md),
 [macOS setup](docs/MAC_SETUP.md),
-[data isolation](docs/DATA_ISOLATION.md), and [Contributing](CONTRIBUTING.md).
+[data isolation](docs/DATA_ISOLATION.md),
+[Mac runbook](docs/MAC_RUNBOOK.md), and [Contributing](CONTRIBUTING.md).
 
 ## License
 

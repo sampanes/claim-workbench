@@ -1,0 +1,290 @@
+Scope: 4 of 5 workspace projects
+packages/core test:coverage$ node --test --experimental-test-coverage test/*.test.js
+packages/core test:coverage: ✔ a fresh token verifies exactly once (4.4585ms)
+packages/core test:coverage: ✔ a missing token is APPROVAL_REQUIRED (0.068542ms)
+packages/core test:coverage: ✔ expiry is enforced against the verifier clock (0.526166ms)
+packages/core test:coverage: ✔ any tampering with bound fields breaks the signature (1.937292ms)
+packages/core test:coverage: ✔ a valid token for a different scope is rejected (0.331708ms)
+packages/core test:coverage: ✔ changed evidence invalidates an otherwise valid token (0.209834ms)
+packages/core test:coverage: ✔ the wrong secret never verifies (0.202959ms)
+packages/core test:coverage: ✔ document generation is deterministic for identical packet facts (2.316667ms)
+packages/core test:coverage: ✔ html output escapes markup in packet facts (0.124625ms)
+packages/core test:coverage: ✔ filenames and folder layout are deterministic (0.049583ms)
+packages/core test:coverage: ✔ a fresh, intact artifact set verifies cleanly (8.595292ms)
+packages/core test:coverage: ✔ a missing file is reported and names its resolving action (1.814167ms)
+packages/core test:coverage: ✔ modified content is reported as tampering (3.103291ms)
+packages/core test:coverage: ✔ changed packet facts make every artifact stale (2.319209ms)
+packages/core test:coverage: ✔ a required kind absent from the manifest is missing (0.574875ms)
+packages/core test:coverage: ✔ no manifest means no artifact findings; step order handles generation (0.963542ms)
+packages/core test:coverage: ✔ context envelopes are redacted by construction (7.100542ms)
+packages/core test:coverage: ✔ envelopes respect the context budget (2.188708ms)
+packages/core test:coverage: ✔ a blocked run's envelope cannot expose unavailable actions (2.836916ms)
+packages/core test:coverage: ✔ the no-model summary cites only supplied topics and actions (1.404875ms)
+packages/core test:coverage: ✔ help topic search finds topics without a model (1.09125ms)
+packages/core test:coverage: ✔ assistance regression fixtures hold (2.378209ms)
+packages/core test:coverage: ✔ cli passes a valid packet with exit code 0 (55.838042ms)
+packages/core test:coverage: ✔ cli reports hard stops with exit code 1 and stable codes (46.210333ms)
+packages/core test:coverage: ✔ cli distinguishes usage and read errors with exit code 2 (59.382166ms)
+packages/core test:coverage: ✔ calculates synthetic packet total with decimal strings (1.647541ms)
+packages/core test:coverage: ✔ renders deterministic no-model help (0.137875ms)
+packages/core test:coverage: ✔ parses plain rows with a header (2.574833ms)
+packages/core test:coverage: ✔ handles quoted fields with commas, escaped quotes, and newlines (0.196042ms)
+packages/core test:coverage: ✔ handles CRLF endings and a UTF-8 byte-order mark (0.116542ms)
+packages/core test:coverage: ✔ a missing trailing newline still yields the last row (0.094125ms)
+packages/core test:coverage: ✔ empty input and header-only input yield no rows (0.139209ms)
+packages/core test:coverage: ✔ an unterminated quote is a structural error (0.434208ms)
+packages/core test:coverage: ✔ ragged rows are passed through for the adapter to judge (0.133417ms)
+packages/core test:coverage: ✔ re-importing the identical report creates no duplicate work (11.163458ms)
+packages/core test:coverage: ✔ an overlapping revised report is classified line by line (6.808291ms)
+packages/core test:coverage: ✔ without source ids, fingerprints still catch exact duplicates (2.895458ms)
+packages/core test:coverage: ✔ without source ids, a changed amount is a near duplicate by service content (2.804375ms)
+packages/core test:coverage: ✔ packets from different clients never match each other (4.184ms)
+packages/core test:coverage: ✔ normalizes amounts from common report formats (0.668166ms)
+packages/core test:coverage: ✔ normalizes ISO and US-style service dates (0.169208ms)
+packages/core test:coverage: ✔ imports the synthetic example into one packet per client (12.322709ms)
+packages/core test:coverage: ✔ row order does not change packet content (5.109792ms)
+packages/core test:coverage: ✔ a missing mapped column stops the import with a stable code (2.930209ms)
+packages/core test:coverage: ✔ an invalid row becomes findings on the batch and the affected packet (1.589667ms)
+packages/core test:coverage: ✔ empty and unparseable reports produce stable codes (1.525834ms)
+packages/core test:coverage: ✔ an unsupported mapping version is rejected (1.944292ms)
+packages/core test:coverage: ✔ accepts canonical decimal amounts (2.177834ms)
+packages/core test:coverage: ✔ rejects malformed amounts with a stable error code (0.337334ms)
+packages/core test:coverage: ✔ round-trips cents and decimal strings (0.088792ms)
+packages/core test:coverage: ✔ adds and sums money in one currency (0.600875ms)
+packages/core test:coverage: ✔ refuses cross-currency arithmetic (0.060667ms)
+packages/core test:coverage: ✔ money equality compares value, not object identity (0.065292ms)
+packages/core test:coverage: ✔ guards against invalid currency and formats for display (0.081958ms)
+packages/core test:coverage: ✔ the synthetic recipe parses and validates cleanly (5.39175ms)
+packages/core test:coverage: ✔ every recipe step names a known action and a resolvable help topic (4.64075ms)
+packages/core test:coverage: ✔ an unsupported recipe version is rejected without interpretation (2.834917ms)
+packages/core test:coverage: ✔ duplicate step ids and unknown actions are hard stops (0.951334ms)
+packages/core test:coverage: ✔ an irreversible step without an approval gate is rejected (2.671625ms)
+packages/core test:coverage: ✔ a recipe cannot mark a hard stop as overridable (0.838417ms)
+packages/core test:coverage: ✔ required-field evaluation resolves packet paths (1.137ms)
+packages/core test:coverage: ✔ sha256Hex matches node:crypto for representative inputs (2.226834ms)
+packages/core test:coverage: ✔ sha256Hex matches the published empty-string and abc vectors (0.108917ms)
+packages/core test:coverage: ✔ hmacSha256Hex matches node:crypto including long keys (4.618625ms)
+packages/core test:coverage: ✔ the synthetic packet fixture matches the in-memory fixture (6.854292ms)
+packages/core test:coverage: ✔ a valid packet passes with no findings (0.715958ms)
+packages/core test:coverage: ✔ missing client identifier is a hard stop with a stable code and path (1.5045ms)
+packages/core test:coverage: ✔ an impossible calendar date is rejected (1.053875ms)
+packages/core test:coverage: ✔ malformed money is rejected (1.627791ms)
+packages/core test:coverage: ✔ an inconsistent declared total is a hard stop with both values in data (0.811542ms)
+packages/core test:coverage: ✔ unknown future schema versions are rejected without further interpretation (0.304792ms)
+packages/core test:coverage: ✔ non-object input is malformed, not a crash (0.221458ms)
+packages/core test:coverage: ✔ duplicate service line ids are reported (0.320291ms)
+packages/core test:coverage: ✔ empty service lines are a hard stop (0.1035ms)
+packages/core test:coverage: ✔ mixed currencies are a hard stop (0.16825ms)
+packages/core test:coverage: ✔ a service date outside the period is a warning, not a hard stop (0.28375ms)
+packages/core test:coverage: ✔ missing source ids produce one aggregated notice (0.160041ms)
+packages/core test:coverage: ✔ every registered finding code has a resolvable help topic (0.1735ms)
+packages/core test:coverage: ✔ the validation report is readable and mentions codes (1.453417ms)
+packages/core test:coverage: ✔ the full recipe walks the state machine to Complete (6.092292ms)
+packages/core test:coverage: ✔ invalid transitions and out-of-order steps are rejected (0.413875ms)
+packages/core test:coverage: ✔ hard stops block progress and cannot be overridden (0.555ms)
+packages/core test:coverage: ✔ permitted warnings require a recorded override before progress (0.63275ms)
+packages/core test:coverage: ✔ assistance modes gate reversible steps and never clear findings (0.495916ms)
+packages/core test:coverage: ✔ a mode change cannot lift a blocking finding (0.330916ms)
+packages/core test:coverage: ✔ undo reopens the fill, comparison, and review steps (0.451042ms)
+packages/core test:coverage: ✔ manual handling requires a reason and is terminal (0.239291ms)
+packages/core test:coverage: ✔ unknown actions are rejected (0.271584ms)
+packages/core test:coverage: ✔ evaluation is deterministic for identical inputs (0.670083ms)
+packages/core test:coverage: ℹ tests 89
+packages/core test:coverage: ℹ suites 0
+packages/core test:coverage: ℹ pass 89
+packages/core test:coverage: ℹ fail 0
+packages/core test:coverage: ℹ cancelled 0
+packages/core test:coverage: ℹ skipped 0
+packages/core test:coverage: ℹ todo 0
+packages/core test:coverage: ℹ duration_ms 212.403417
+packages/core test:coverage: ℹ start of coverage report
+packages/core test:coverage: ℹ ------------------------------------------------------------------------------------------------------------------
+packages/core test:coverage: ℹ file                | line % | branch % | funcs % | uncovered lines
+packages/core test:coverage: ℹ ------------------------------------------------------------------------------------------------------------------
+packages/core test:coverage: ℹ src                 |        |          |         | 
+packages/core test:coverage: ℹ  actions.js         |  99.18 |   100.00 |   80.00 | 230-231
+packages/core test:coverage: ℹ  approval.js        |  94.23 |    88.00 |  100.00 | 47-48 51-52 80-81
+packages/core test:coverage: ℹ  artifacts.js       |  95.42 |    77.42 |  100.00 | 107-113
+packages/core test:coverage: ℹ  assistance.js      |  98.95 |    76.60 |  100.00 | 1007-1013 1037-1038 1046-1047
+packages/core test:coverage: ℹ  audit.js           |  84.62 |    33.33 |   50.00 | 9-10 25-26
+packages/core test:coverage: ℹ  canonical-json.js  |  95.65 |    73.33 |  100.00 | 22
+packages/core test:coverage: ℹ  cli.js             |  93.88 |    60.00 |  100.00 | 34-36
+packages/core test:coverage: ℹ  csv.js             |  97.26 |    86.84 |  100.00 | 61-62
+packages/core test:coverage: ℹ  dates.js           |  87.50 |    85.71 |   75.00 | 25-28
+packages/core test:coverage: ℹ  duplicates.js      | 100.00 |    81.58 |  100.00 | 
+packages/core test:coverage: ℹ  findings.js        | 100.00 |    92.31 |  100.00 | 
+packages/core test:coverage: ℹ  ids.js             |  94.29 |    85.71 |  100.00 | 23-24
+packages/core test:coverage: ℹ  import.js          |  94.35 |    72.53 |   90.91 | 23-25 30-32 41-42 45-46 49-50 97-99 229
+packages/core test:coverage: ℹ  index.js           | 100.00 |   100.00 |  100.00 | 
+packages/core test:coverage: ℹ  money.js           |  89.36 |    83.33 |  100.00 | 41-42 48-49 85-86 88-89 91-92
+packages/core test:coverage: ℹ  packet.js          | 100.00 |    46.67 |  100.00 | 
+packages/core test:coverage: ℹ  protocol.js        |  45.45 |   100.00 |    0.00 | 29-48 51-66
+packages/core test:coverage: ℹ  recipe.js          |  82.84 |    62.75 |   83.33 | 16-18 29-30 34 43-44 46-47 52-53 58 66-68 73-75 79-80 100-101
+packages/core test:coverage: ℹ  sha256.js          |  99.13 |    90.48 |  100.00 | 26
+packages/core test:coverage: ℹ  synthetic.js       | 100.00 |   100.00 |  100.00 | 
+packages/core test:coverage: ℹ  validate-packet.js |  85.85 |    83.82 |  100.00 | 28-33 43-47 60-65 94-98 102-103 108-112 174
+packages/core test:coverage: ℹ  workflow.js        |  94.97 |    81.03 |   96.00 | 52-53 106 232-233 244-251 275-277
+packages/core test:coverage: ℹ ------------------------------------------------------------------------------------------------------------------
+packages/core test:coverage: ℹ all files           |  95.03 |    78.28 |   94.90 | 
+packages/core test:coverage: ℹ ------------------------------------------------------------------------------------------------------------------
+packages/core test:coverage: ℹ end of coverage report
+packages/core test:coverage: Done
+packages/browser-worker test:coverage$ node --test --experimental-test-coverage test/*.test.js
+packages/service test:coverage$ node --test --experimental-test-coverage test/*.test.js
+packages/browser-worker test:coverage: ✔ the claim form is recognized only when every evidence class agrees (12.71725ms)
+packages/browser-worker test:coverage: ✔ a matching URL alone is not sufficient (6.726792ms)
+packages/browser-worker test:coverage: ✔ a misleading page with the right words but no controls is unknown (3.393333ms)
+packages/browser-worker test:coverage: ✔ an incomplete page missing one required control is unknown (1.515167ms)
+packages/browser-worker test:coverage: ✔ ambiguous matches are treated as unknown (0.120666ms)
+packages/browser-worker test:coverage: ✔ extracts title, text, controls, forms, and links (3.237958ms)
+packages/browser-worker test:coverage: ✔ observed rows parse hidden row inputs in order (0.281125ms)
+packages/browser-worker test:coverage: ✔ decodes entities in attribute values and text (0.061584ms)
+packages/service test:coverage: ✔ approval is only issued for a reviewed, unblocked run (18.001083ms)
+packages/service test:coverage: ✔ a receipt without required evidence cannot be recorded (7.682958ms)
+packages/browser-worker test:coverage: ✔ submission fails without approval and nothing is sent (70.783375ms)
+packages/browser-worker test:coverage: ✔ submit verifies, submits, and lands on the receipt for capture (25.552417ms)
+packages/service test:coverage: ✔ the first complete proof: import to receipt with explicit approval (79.343125ms)
+packages/browser-worker test:coverage: ✔ a stale approval cannot be used (15.447042ms)
+packages/service test:coverage: ✔ generate_artifacts writes files, records a manifest, and advances the run (32.626708ms)
+packages/service test:coverage: ✔ tampered artifacts block progress until regeneration (15.756458ms)
+packages/service test:coverage: ✔ a deleted artifact file is reported missing after restart (13.797958ms)
+packages/service test:coverage: ✔ repeated generation with unchanged facts produces identical hashes (9.702083ms)
+packages/service test:coverage: ✔ import persists packets and surfaces summaries (18.893417ms)
+packages/service test:coverage: ✔ a repeat import creates duplicate-review findings, not silent work (11.810459ms)
+packages/service test:coverage: ✔ runs persist and resume identically after a restart (17.386375ms)
+packages/service test:coverage: ✔ audit events persist in order with human-readable summaries (5.736584ms)
+packages/service test:coverage: ✔ duplicate warnings block progress until an override is recorded (10.441792ms)
+packages/service test:coverage: ✔ workflow errors carry stable codes through the service boundary (3.279833ms)
+packages/service test:coverage: ✔ a hard-stopped packet stays blocked in the persisted state (2.402334ms)
+packages/service test:coverage: ✔ an invalid recipe is refused at startup (2.339875ms)
+packages/service test:coverage: ✔ the stdio service answers one JSON message per line (77.072291ms)
+packages/browser-worker test:coverage: ✔ a used approval cannot be replayed (22.969333ms)
+packages/browser-worker test:coverage: ✔ changed evidence invalidates the approval (23.079917ms)
+packages/service test:coverage: ℹ tests 16
+packages/service test:coverage: ℹ suites 0
+packages/service test:coverage: ℹ pass 16
+packages/service test:coverage: ℹ fail 0
+packages/service test:coverage: ℹ cancelled 0
+packages/service test:coverage: ℹ skipped 0
+packages/service test:coverage: ℹ todo 0
+packages/service test:coverage: ℹ duration_ms 208.447292
+packages/service test:coverage: ℹ start of coverage report
+packages/service test:coverage: ℹ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+packages/service test:coverage: ℹ file                   | line % | branch % | funcs % | uncovered lines
+packages/service test:coverage: ℹ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+packages/service test:coverage: ℹ ..                     |        |          |         | 
+packages/service test:coverage: ℹ  ..                    |        |          |         | 
+packages/service test:coverage: ℹ   examples             |        |          |         | 
+packages/service test:coverage: ℹ    fake-portal         |        |          |         | 
+packages/service test:coverage: ℹ     server.mjs         |  84.29 |    69.07 |   94.12 | 178-179 189-191 217-219 222-224 227-228 231-233 269-273 275-277 279-281 304 306-317 336-350
+packages/service test:coverage: ℹ  browser-worker        |        |          |         | 
+packages/service test:coverage: ℹ   src                  |        |          |         | 
+packages/service test:coverage: ℹ    classify.js         |  92.31 |    70.00 |  100.00 | 36-38
+packages/service test:coverage: ℹ    drivers             |        |          |         | 
+packages/service test:coverage: ℹ     http-driver.js     |  97.40 |    78.26 |   90.91 | 75-76
+packages/service test:coverage: ℹ    page-model.js       | 100.00 |    82.76 |  100.00 | 
+packages/service test:coverage: ℹ    worker.js           |  64.06 |    42.72 |   68.97 | 83-93 114-117 119-122 126-129 132-136 140-144 149-150 166-167 170-174 196-197 201-210 213-230 240-246 291-294 300-303 308-313 327-331 341-344 352 363-371 382-385 389-396 404-407 414-415 421-422 429-456 464-467 469-472 488-493 497-500 504-510 512-515 519-525 542-545 559-560
+packages/service test:coverage: ℹ  core                  |        |          |         | 
+packages/service test:coverage: ℹ   src                  |        |          |         | 
+packages/service test:coverage: ℹ    actions.js          |  99.18 |    83.33 |   80.00 | 230-231
+packages/service test:coverage: ℹ    approval.js         |  80.77 |    43.75 |   80.00 | 47-48 51-52 77-78 80-81 83-84 86-87 90-91 94-96 99-101
+packages/service test:coverage: ℹ    artifacts.js        |  87.58 |    56.52 |  100.00 | 107-113 116-121 144-149
+packages/service test:coverage: ℹ    assistance.js       |  89.32 |   100.00 |   12.50 | 914-915 918-919 922-923 926-933 936-937 948-982 989-1049
+packages/service test:coverage: ℹ    audit.js            |  84.62 |    33.33 |   50.00 | 9-10 25-26
+packages/service test:coverage: ℹ    canonical-json.js   |  95.65 |    68.75 |  100.00 | 22
+packages/service test:coverage: ℹ    csv.js              |  87.67 |    60.71 |   83.33 | 8-11 55-57 61-62
+packages/service test:coverage: ℹ    dates.js            |  87.50 |    85.71 |   75.00 | 25-28
+packages/service test:coverage: ℹ    duplicates.js       |  98.06 |    87.10 |  100.00 | 51-52
+packages/service test:coverage: ℹ    findings.js         |  98.70 |    83.33 |   87.50 | 130-131
+packages/service test:coverage: ℹ    ids.js              |  94.29 |    85.71 |  100.00 | 23-24
+packages/service test:coverage: ℹ    import.js           |  80.21 |    37.68 |   90.91 | 23-25 30-32 34-38 41-42 45-46 49-50 85 97-99 165-171 179-185 194-196 203-205 213-218 229 270-277
+packages/service test:coverage: ℹ    index.js            | 100.00 |   100.00 |  100.00 | 
+packages/service test:coverage: ℹ    money.js            |  70.21 |    58.82 |   75.00 | 11-14 36-37 41-42 48-49 55-56 61-67 70-72 85-86 88-89 91-92
+packages/service test:coverage: ℹ    packet.js           | 100.00 |    46.67 |  100.00 | 
+packages/service test:coverage: ℹ    protocol.js         |  81.82 |    38.46 |  100.00 | 31-32 34-35 38-39 42-43 45-46 52-53
+packages/service test:coverage: ℹ    recipe.js           |  63.43 |    44.74 |   80.00 | 16-18 20-25 29-30 34 43-44 46-47 52-53 58 60-62 73-75 79-80 82-83 85-89 96-104 126-131
+packages/service test:coverage: ℹ    sha256.js           |  99.13 |    85.71 |  100.00 | 26
+packages/service test:coverage: ℹ    synthetic.js        | 100.00 |   100.00 |  100.00 | 
+packages/service test:coverage: ℹ    validate-packet.js  |  54.25 |    36.36 |   90.00 | 16-21 28-33 37-41 43-47 53-58 60-65 73-75 78-85 94-98 102-103 108-112 116-118 126-130 140-144 148-153 162-167 174 199-212
+packages/service test:coverage: ℹ    workflow.js         |  92.14 |    80.00 |   96.00 | 52-53 106 174-175 223-230 232-233 275-277 286-288 304-307
+packages/service test:coverage: ℹ src                    |        |          |         | 
+packages/service test:coverage: ℹ  artifact-store.js     |  89.66 |    76.92 |   88.89 | 10-11 27-28 40-41
+packages/service test:coverage: ℹ  service.js            |  95.25 |    79.17 |   90.63 | 60-61 64-67 178-180 291-292 333-337
+packages/service test:coverage: ℹ  store.js              |  94.77 |    76.67 |   93.33 | 63-64 76-78 92-94
+packages/service test:coverage: ℹ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+packages/service test:coverage: ℹ all files              |  85.63 |    63.88 |   86.97 | 
+packages/service test:coverage: ℹ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+packages/service test:coverage: ℹ end of coverage report
+packages/service test:coverage: Done
+packages/browser-worker test:coverage: ✔ the destination's duplicate rejection surfaces as a finding (20.099708ms)
+packages/browser-worker test:coverage: ✔ submit demands the review page and captureReceipt demands the receipt page (6.132667ms)
+packages/browser-worker test:coverage: ✔ a worker without an approval verifier cannot submit at all (14.039125ms)
+packages/browser-worker test:coverage: ✔ readPage recognizes the claim form with full evidence (43.649417ms)
+packages/browser-worker test:coverage: ✔ readPage reports unknown pages and disables mutation guidance (22.164791ms)
+packages/browser-worker test:coverage: ✔ the degraded claim form is not recognized (16.087584ms)
+packages/browser-worker test:coverage: ✔ showTarget highlights an existing control and reports missing ones (9.824542ms)
+packages/browser-worker test:coverage: ✔ matchRecord confirms the right member and blocks the wrong one (17.485ms)
+packages/browser-worker test:coverage: ✔ commands demand a recognized page before acting (8.661917ms)
+packages/browser-worker test:coverage: ✔ assistance modes gate commands (6.83375ms)
+packages/browser-worker test:coverage: ✔ protocol violations fail without touching the page (8.701083ms)
+packages/browser-worker test:coverage: ✔ pause and emergency stop cancel commands (8.893792ms)
+packages/browser-worker test:coverage: ✔ diagnostics are off by default and explicit when enabled (16.065791ms)
+packages/browser-worker test:coverage: ✔ fillServiceRows fills every row with expected-versus-observed evidence (66.008375ms)
+packages/browser-worker test:coverage: ✔ a repeated commandId returns the original result and fills nothing twice (16.152084ms)
+packages/browser-worker test:coverage: ✔ a new fill command skips rows that are already observed (12.053291ms)
+packages/browser-worker test:coverage: ✔ verifyTotal blocks on a mismatch and passes once rows agree (16.986709ms)
+packages/browser-worker test:coverage: ✔ mutation is disabled on unknown pages and in low assistance modes (11.096792ms)
+packages/browser-worker test:coverage: ✔ an unknown service line id fails without touching the page (7.005625ms)
+packages/browser-worker test:coverage: ✔ uploadArtifact verifies the manifest hash before uploading (18.73375ms)
+packages/browser-worker test:coverage: ✔ undoFill removes exactly what this session filled (22.188833ms)
+packages/browser-worker test:coverage: ℹ tests 34
+packages/browser-worker test:coverage: ℹ suites 0
+packages/browser-worker test:coverage: ℹ pass 34
+packages/browser-worker test:coverage: ℹ fail 0
+packages/browser-worker test:coverage: ℹ cancelled 0
+packages/browser-worker test:coverage: ℹ skipped 0
+packages/browser-worker test:coverage: ℹ todo 0
+packages/browser-worker test:coverage: ℹ duration_ms 296.972959
+packages/browser-worker test:coverage: ℹ start of coverage report
+packages/browser-worker test:coverage: ℹ -------------------------------------------------------------------------------------------------------------------------------------------------------
+packages/browser-worker test:coverage: ℹ file                   | line % | branch % | funcs % | uncovered lines
+packages/browser-worker test:coverage: ℹ -------------------------------------------------------------------------------------------------------------------------------------------------------
+packages/browser-worker test:coverage: ℹ ..                     |        |          |         | 
+packages/browser-worker test:coverage: ℹ  ..                    |        |          |         | 
+packages/browser-worker test:coverage: ℹ   examples             |        |          |         | 
+packages/browser-worker test:coverage: ℹ    fake-portal         |        |          |         | 
+packages/browser-worker test:coverage: ℹ     server.mjs         |  90.29 |    81.44 |   94.12 | 178-179 189-191 217-219 222-224 275-277 279-281 316-317 336-350
+packages/browser-worker test:coverage: ℹ  core                  |        |          |         | 
+packages/browser-worker test:coverage: ℹ   src                  |        |          |         | 
+packages/browser-worker test:coverage: ℹ    actions.js          |  97.55 |   100.00 |   40.00 | 222-223 226-227 230-231
+packages/browser-worker test:coverage: ℹ    approval.js         |  89.42 |    80.77 |  100.00 | 47-48 51-52 80-81 83-84 94-96
+packages/browser-worker test:coverage: ℹ    artifacts.js        |  22.88 |   100.00 |    0.00 | 13-19 25-58 67-68 71-80 83-92 99-153
+packages/browser-worker test:coverage: ℹ    assistance.js       |  89.32 |   100.00 |   12.50 | 914-915 918-919 922-923 926-933 936-937 948-982 989-1049
+packages/browser-worker test:coverage: ℹ    audit.js            |  34.62 |   100.00 |    0.00 | 8-22 25-26
+packages/browser-worker test:coverage: ℹ    canonical-json.js   |  82.61 |    64.29 |  100.00 | 10-12 22
+packages/browser-worker test:coverage: ℹ    csv.js              |  13.70 |   100.00 |    0.00 | 8-11 15-73
+packages/browser-worker test:coverage: ℹ    dates.js            |  43.75 |   100.00 |   25.00 | 7-16 19-22 25-28
+packages/browser-worker test:coverage: ℹ    duplicates.js       |  18.45 |   100.00 |    0.00 | 11-29 31-55 64-103
+packages/browser-worker test:coverage: ℹ    findings.js         |  93.51 |    75.00 |   42.86 | 126-127 130-131 147-148 151-154
+packages/browser-worker test:coverage: ℹ    ids.js              |  74.29 |    75.00 |   66.67 | 23-24 29-35
+packages/browser-worker test:coverage: ℹ    import.js           |  12.72 |   100.00 |    0.00 | 23-25 28-53 56-74 77-86 88-136 139-140 146-283
+packages/browser-worker test:coverage: ℹ    index.js            | 100.00 |   100.00 |  100.00 | 
+packages/browser-worker test:coverage: ℹ    money.js            |  35.11 |   100.00 |    0.00 | 11-14 18-19 22-23 26-32 35-44 47-51 54-58 61-67 70-72 75-76 79-81 84-94
+packages/browser-worker test:coverage: ℹ    packet.js           |  54.29 |   100.00 |    0.00 | 27-28 31-37 43-57 63-70
+packages/browser-worker test:coverage: ℹ    protocol.js         |  87.88 |    53.85 |  100.00 | 31-32 38-39 45-46 52-53
+packages/browser-worker test:coverage: ℹ    recipe.js           |  16.42 |   100.00 |    0.00 | 12-93 96-104 109-115 121-134
+packages/browser-worker test:coverage: ℹ    sha256.js           |  99.13 |    85.71 |  100.00 | 26
+packages/browser-worker test:coverage: ℹ    synthetic.js        | 100.00 |   100.00 |  100.00 | 
+packages/browser-worker test:coverage: ℹ    validate-packet.js  |   8.02 |   100.00 |    0.00 | 10-12 14-23 25-49 51-67 70-185 187-196 199-212
+packages/browser-worker test:coverage: ℹ    workflow.js         |  19.81 |   100.00 |    0.00 | 20-23 49-68 70-80 82-87 93-109 111-114 119-122 126-164 169-318
+packages/browser-worker test:coverage: ℹ src                    |        |          |         | 
+packages/browser-worker test:coverage: ℹ  classify.js           | 100.00 |    91.30 |  100.00 | 
+packages/browser-worker test:coverage: ℹ  drivers               |        |          |         | 
+packages/browser-worker test:coverage: ℹ   http-driver.js       | 100.00 |    79.17 |  100.00 | 
+packages/browser-worker test:coverage: ℹ  page-model.js         | 100.00 |    86.21 |  100.00 | 
+packages/browser-worker test:coverage: ℹ  worker.js             |  91.10 |    79.87 |   93.10 | 196-197 300-303 308-313 327-331 341-344 442-445 464-467 497-500 512-515 519-525 542-545 559-560
+packages/browser-worker test:coverage: ℹ -------------------------------------------------------------------------------------------------------------------------------------------------------
+packages/browser-worker test:coverage: ℹ all files              |  68.40 |    81.01 |   58.29 | 
+packages/browser-worker test:coverage: ℹ -------------------------------------------------------------------------------------------------------------------------------------------------------
+packages/browser-worker test:coverage: ℹ end of coverage report
+packages/browser-worker test:coverage: Done

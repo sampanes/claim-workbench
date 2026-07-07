@@ -81,7 +81,7 @@ Request:
   "requestId": "r3",
   "op": "importCsv",
   "input": {
-    "csvText": "Row ID,Member ID,Member Name,Service Date,Service Code,Description,Units,Amount\r\nSYN-ROW-0001,SYN-000123,Taylor Examp...",
+    "csvText": "Row ID,Member ID,Member Name,Service Date,Service Code,Description,Units,Amount\nSYN-ROW-0001,SYN-000123,Taylor Exampl...",
     "mapping": {
       "mappingVersion": "1",
       "adapterId": "csv-generic",
@@ -113,12 +113,12 @@ Response:
   "requestId": "r3",
   "ok": true,
   "output": {
-    "batchId": "batch_304515a92fc74e0ab973a1220bde2b61",
+    "batchId": "batch_183fb7b2e90d42589d29f4ae4efefae8",
     "batch": {
-      "id": "batch_304515a92fc74e0ab973a1220bde2b61",
-      "importedAt": "2026-07-07T03:43:41.188Z",
+      "id": "batch_183fb7b2e90d42589d29f4ae4efefae8",
+      "importedAt": "2026-07-07T03:49:41.102Z",
       "sourceName": "synthetic-eap-2026-06.csv",
-      "sourceSha256": "3730c7418e54dc41074b5f1bd10e72b6149cdd234ffff7aa426fe282751d8c88",
+      "sourceSha256": "c9eb1aa9c8af99dd3ed546dc21707c0cd6535d0d7b1a44d86b56f17aa528481c",
       "adapterId": "csv-generic",
       "adapterVersion": "1",
       "rowCount": 4,
@@ -130,7 +130,7 @@ Response:
     "findings": [],
     "reviews": [
       {
-        "packetId": "packet_b696e1f68d1f4303bfea0ff746aa4c90",
+        "packetId": "packet_47284d2fff95456082ac86bc8983028e",
         "verdict": "fresh",
         "lineReviews": [
           {
@@ -149,7 +149,7 @@ Response:
         "findings": []
       },
       {
-        "packetId": "packet_5a9174fe0903486386f46327dca356e8",
+        "packetId": "packet_2855628260e544bfb552ff5fe5cf2db1",
         "verdict": "fresh",
         "lineReviews": [
           {
@@ -170,7 +170,7 @@ Response:
     ],
     "packets": [
       {
-        "id": "packet_b696e1f68d1f4303bfea0ff746aa4c90",
+        "id": "packet_47284d2fff95456082ac86bc8983028e",
         "clientDisplayName": "Taylor Example",
         "destinationId": "synthetic-eap-portal",
         "recipeId": "synthetic-eap-monthly",
@@ -186,7 +186,7 @@ Response:
         "findingCounts": {}
       },
       {
-        "id": "packet_5a9174fe0903486386f46327dca356e8",
+        "id": "packet_2855628260e544bfb552ff5fe5cf2db1",
         "clientDisplayName": "Jordan Example",
         "destinationId": "synthetic-eap-portal",
         "recipeId": "synthetic-eap-monthly",
@@ -215,7 +215,7 @@ Request:
   "requestId": "r4",
   "op": "startRun",
   "input": {
-    "packetId": "packet_b696e1f68d1f4303bfea0ff746aa4c90"
+    "packetId": "packet_47284d2fff95456082ac86bc8983028e"
   }
 }
 ```
@@ -229,8 +229,8 @@ Response:
   "output": {
     "run": {
       "runVersion": "1",
-      "id": "run_c0bf4e81e51d4711b87aaa90b8c50a65",
-      "packetId": "packet_b696e1f68d1f4303bfea0ff746aa4c90",
+      "id": "run_90025fda3cfa4c37bace6bd6dfacee55",
+      "packetId": "packet_47284d2fff95456082ac86bc8983028e",
       "recipeId": "synthetic-eap-monthly",
       "recipeRevision": "1",
       "state": "Imported",
@@ -238,8 +238,8 @@ Response:
       "completedSteps": [],
       "overrides": [],
       "evidence": {},
-      "startedAt": "2026-07-07T03:43:41.269Z",
-      "updatedAt": "2026-07-07T03:43:41.269Z"
+      "startedAt": "2026-07-07T03:49:41.105Z",
+      "updatedAt": "2026-07-07T03:49:41.105Z"
     },
     "resumed": false
   }
@@ -255,7 +255,7 @@ Request:
   "requestId": "r5",
   "op": "evaluate",
   "input": {
-    "runId": "run_c0bf4e81e51d4711b87aaa90b8c50a65"
+    "runId": "run_90025fda3cfa4c37bace6bd6dfacee55"
   }
 }
 ```
@@ -323,7 +323,7 @@ Request:
   "requestId": "r6",
   "op": "act",
   "input": {
-    "runId": "run_c0bf4e81e51d4711b87aaa90b8c50a65",
+    "runId": "run_90025fda3cfa4c37bace6bd6dfacee55",
     "action": "validate_packet"
   }
 }
@@ -338,8 +338,8 @@ Response:
   "output": {
     "run": {
       "runVersion": "1",
-      "id": "run_c0bf4e81e51d4711b87aaa90b8c50a65",
-      "packetId": "packet_b696e1f68d1f4303bfea0ff746aa4c90",
+      "id": "run_90025fda3cfa4c37bace6bd6dfacee55",
+      "packetId": "packet_47284d2fff95456082ac86bc8983028e",
       "recipeId": "synthetic-eap-monthly",
       "recipeRevision": "1",
       "state": "PacketValidated",
@@ -348,25 +348,25 @@ Response:
         {
           "stepId": "validate-packet",
           "action": "validate_packet",
-          "at": "2026-07-07T03:43:41.277Z",
+          "at": "2026-07-07T03:49:41.106Z",
           "commandId": null,
           "evidenceDigest": null
         }
       ],
       "overrides": [],
       "evidence": {},
-      "startedAt": "2026-07-07T03:43:41.269Z",
-      "updatedAt": "2026-07-07T03:43:41.277Z"
+      "startedAt": "2026-07-07T03:49:41.105Z",
+      "updatedAt": "2026-07-07T03:49:41.106Z"
     },
     "events": [
       {
         "eventVersion": "1",
-        "id": "event_c11d7d87747044189dcc67692f9a2290",
-        "runId": "run_c0bf4e81e51d4711b87aaa90b8c50a65",
-        "packetId": "packet_b696e1f68d1f4303bfea0ff746aa4c90",
+        "id": "event_85116047572a4db89fd27c3ff9fe6a34",
+        "runId": "run_90025fda3cfa4c37bace6bd6dfacee55",
+        "packetId": "packet_47284d2fff95456082ac86bc8983028e",
         "action": "validate_packet",
         "actor": "operator",
-        "at": "2026-07-07T03:43:41.277Z",
+        "at": "2026-07-07T03:49:41.106Z",
         "summary": "Validate packet completed.",
         "details": {
           "target": "PacketValidated",
@@ -415,7 +415,7 @@ Request:
   "requestId": "r7",
   "op": "listAuditEvents",
   "input": {
-    "runId": "run_c0bf4e81e51d4711b87aaa90b8c50a65"
+    "runId": "run_90025fda3cfa4c37bace6bd6dfacee55"
   }
 }
 ```
@@ -429,12 +429,12 @@ Response:
   "output": [
     {
       "eventVersion": "1",
-      "id": "event_c11d7d87747044189dcc67692f9a2290",
-      "runId": "run_c0bf4e81e51d4711b87aaa90b8c50a65",
-      "packetId": "packet_b696e1f68d1f4303bfea0ff746aa4c90",
+      "id": "event_85116047572a4db89fd27c3ff9fe6a34",
+      "runId": "run_90025fda3cfa4c37bace6bd6dfacee55",
+      "packetId": "packet_47284d2fff95456082ac86bc8983028e",
       "action": "validate_packet",
       "actor": "operator",
-      "at": "2026-07-07T03:43:41.277Z",
+      "at": "2026-07-07T03:49:41.106Z",
       "summary": "Validate packet completed.",
       "details": {
         "target": "PacketValidated",
@@ -480,7 +480,7 @@ Request:
   "requestId": "r9",
   "op": "act",
   "input": {
-    "runId": "run_c0bf4e81e51d4711b87aaa90b8c50a65",
+    "runId": "run_90025fda3cfa4c37bace6bd6dfacee55",
     "action": "not_a_real_action"
   }
 }

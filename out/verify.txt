@@ -1,0 +1,204 @@
+== Portable packages: tests ==
+Scope: 4 of 5 workspace projects
+packages/core test$ node --test test/*.test.js
+packages/core test: ✔ a fresh token verifies exactly once (56.5009ms)
+packages/core test: ✔ a missing token is APPROVAL_REQUIRED (0.6072ms)
+packages/core test: ✔ expiry is enforced against the verifier clock (3.687ms)
+packages/core test: ✔ any tampering with bound fields breaks the signature (7.1932ms)
+packages/core test: ✔ a valid token for a different scope is rejected (3.6452ms)
+packages/core test: ✔ changed evidence invalidates an otherwise valid token (1.5141ms)
+packages/core test: ✔ the wrong secret never verifies (1.2352ms)
+packages/core test: ✔ document generation is deterministic for identical packet facts (12.7007ms)
+packages/core test: ✔ html output escapes markup in packet facts (1.024ms)
+packages/core test: ✔ filenames and folder layout are deterministic (0.9417ms)
+packages/core test: ✔ a fresh, intact artifact set verifies cleanly (128.0774ms)
+packages/core test: ✔ a missing file is reported and names its resolving action (11.2039ms)
+packages/core test: ✔ modified content is reported as tampering (6.5672ms)
+packages/core test: ✔ changed packet facts make every artifact stale (6.1698ms)
+packages/core test: ✔ a required kind absent from the manifest is missing (3.6049ms)
+packages/core test: ✔ no manifest means no artifact findings; step order handles generation (3.4669ms)
+packages/core test: ✔ context envelopes are redacted by construction (63.3117ms)
+packages/core test: ✔ envelopes respect the context budget (25.9489ms)
+packages/core test: ✔ a blocked run's envelope cannot expose unavailable actions (14.138ms)
+packages/core test: ✔ the no-model summary cites only supplied topics and actions (17.5082ms)
+packages/core test: ✔ help topic search finds topics without a model (5.1257ms)
+packages/core test: ✔ assistance regression fixtures hold (41.3795ms)
+packages/core test: ✔ cli passes a valid packet with exit code 0 (502.9768ms)
+packages/core test: ✔ cli reports hard stops with exit code 1 and stable codes (397.964ms)
+packages/core test: ✔ cli distinguishes usage and read errors with exit code 2 (484.2804ms)
+packages/core test: ✔ calculates synthetic packet total with decimal strings (6.4588ms)
+packages/core test: ✔ renders deterministic no-model help (1.983ms)
+packages/core test: ✔ parses plain rows with a header (7.9896ms)
+packages/core test: ✔ handles quoted fields with commas, escaped quotes, and newlines (1.3411ms)
+packages/core test: ✔ handles CRLF endings and a UTF-8 byte-order mark (1.7606ms)
+packages/core test: ✔ a missing trailing newline still yields the last row (0.8969ms)
+packages/core test: ✔ empty input and header-only input yield no rows (0.8872ms)
+packages/core test: ✔ an unterminated quote is a structural error (3.4572ms)
+packages/core test: ✔ ragged rows are passed through for the adapter to judge (5.3201ms)
+packages/core test: ✔ re-importing the identical report creates no duplicate work (96.0126ms)
+packages/core test: ✔ an overlapping revised report is classified line by line (51.2094ms)
+packages/core test: ✔ without source ids, fingerprints still catch exact duplicates (14.9132ms)
+packages/core test: ✔ without source ids, a changed amount is a near duplicate by service content (15.4945ms)
+packages/core test: ✔ packets from different clients never match each other (12.337ms)
+packages/core test: ✔ normalizes amounts from common report formats (3.9276ms)
+packages/core test: ✔ normalizes ISO and US-style service dates (1.1213ms)
+packages/core test: ✔ imports the synthetic example into one packet per client (71.6191ms)
+packages/core test: ✔ row order does not change packet content (37.9067ms)
+packages/core test: ✔ a missing mapped column stops the import with a stable code (9.1359ms)
+packages/core test: ✔ an invalid row becomes findings on the batch and the affected packet (8.1517ms)
+packages/core test: ✔ empty and unparseable reports produce stable codes (30.0645ms)
+packages/core test: ✔ an unsupported mapping version is rejected (8.0181ms)
+packages/core test: ✔ accepts canonical decimal amounts (7.1502ms)
+packages/core test: ✔ rejects malformed amounts with a stable error code (4.8474ms)
+packages/core test: ✔ round-trips cents and decimal strings (2.0764ms)
+packages/core test: ✔ adds and sums money in one currency (5.7922ms)
+packages/core test: ✔ refuses cross-currency arithmetic (0.7315ms)
+packages/core test: ✔ money equality compares value, not object identity (0.8137ms)
+packages/core test: ✔ guards against invalid currency and formats for display (0.7307ms)
+packages/core test: ✔ the synthetic recipe parses and validates cleanly (24.5511ms)
+packages/core test: ✔ every recipe step names a known action and a resolvable help topic (7.2057ms)
+packages/core test: ✔ an unsupported recipe version is rejected without interpretation (4.5551ms)
+packages/core test: ✔ duplicate step ids and unknown actions are hard stops (4.8385ms)
+packages/core test: ✔ an irreversible step without an approval gate is rejected (4.9052ms)
+packages/core test: ✔ a recipe cannot mark a hard stop as overridable (3.2413ms)
+packages/core test: ✔ required-field evaluation resolves packet paths (4.4066ms)
+packages/core test: ✔ sha256Hex matches node:crypto for representative inputs (38.8259ms)
+packages/core test: ✔ sha256Hex matches the published empty-string and abc vectors (0.5941ms)
+packages/core test: ✔ hmacSha256Hex matches node:crypto including long keys (14.1273ms)
+packages/core test: ✔ the synthetic packet fixture matches the in-memory fixture (31.3512ms)
+packages/core test: ✔ a valid packet passes with no findings (4.0474ms)
+packages/core test: ✔ missing client identifier is a hard stop with a stable code and path (6.3699ms)
+packages/core test: ✔ an impossible calendar date is rejected (4.9836ms)
+packages/core test: ✔ malformed money is rejected (3.1316ms)
+packages/core test: ✔ an inconsistent declared total is a hard stop with both values in data (5.6212ms)
+packages/core test: ✔ unknown future schema versions are rejected without further interpretation (1.7442ms)
+packages/core test: ✔ non-object input is malformed, not a crash (0.8719ms)
+packages/core test: ✔ duplicate service line ids are reported (1.4151ms)
+packages/core test: ✔ empty service lines are a hard stop (0.9307ms)
+packages/core test: ✔ mixed currencies are a hard stop (0.9464ms)
+packages/core test: ✔ a service date outside the period is a warning, not a hard stop (0.8777ms)
+packages/core test: ✔ missing source ids produce one aggregated notice (1.7019ms)
+packages/core test: ✔ every registered finding code has a resolvable help topic (1.6749ms)
+packages/core test: ✔ the validation report is readable and mentions codes (16.1556ms)
+packages/core test: ✔ the full recipe walks the state machine to Complete (52.3623ms)
+packages/core test: ✔ invalid transitions and out-of-order steps are rejected (6.8226ms)
+packages/core test: ✔ hard stops block progress and cannot be overridden (9.8957ms)
+packages/core test: ✔ permitted warnings require a recorded override before progress (6.6584ms)
+packages/core test: ✔ assistance modes gate reversible steps and never clear findings (6.8057ms)
+packages/core test: ✔ a mode change cannot lift a blocking finding (4.7388ms)
+packages/core test: ✔ undo reopens the fill, comparison, and review steps (9.7892ms)
+packages/core test: ✔ manual handling requires a reason and is terminal (8.1873ms)
+packages/core test: ✔ unknown actions are rejected (7.0257ms)
+packages/core test: ✔ evaluation is deterministic for identical inputs (5.4269ms)
+packages/core test: ℹ tests 89
+packages/core test: ℹ suites 0
+packages/core test: ℹ pass 89
+packages/core test: ℹ fail 0
+packages/core test: ℹ cancelled 0
+packages/core test: ℹ skipped 0
+packages/core test: ℹ todo 0
+packages/core test: ℹ duration_ms 1832.5222
+packages/core test: Done
+apps/workbench test$ node --test test/*.test.js
+packages/browser-worker test$ node --test test/*.test.js
+packages/service test$ node --test test/*.test.js
+packages/browser-worker test: ✔ the claim form is recognized only when every evidence class agrees (48.4581ms)
+packages/browser-worker test: ✔ a matching URL alone is not sufficient (31.3468ms)
+packages/browser-worker test: ✔ a misleading page with the right words but no controls is unknown (8.7871ms)
+packages/browser-worker test: ✔ an incomplete page missing one required control is unknown (15.5444ms)
+packages/browser-worker test: ✔ ambiguous matches are treated as unknown (1.0946ms)
+packages/browser-worker test: ✔ extracts title, text, controls, forms, and links (16.9937ms)
+packages/browser-worker test: ✔ observed rows parse hidden row inputs in order (2.5359ms)
+packages/browser-worker test: ✔ decodes entities in attribute values and text (3.8312ms)
+packages/service test: (node:2152) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+packages/service test: (Use `node --trace-warnings ...` to show where the warning was created)
+packages/service test: ✔ approval is only issued for a reviewed, unblocked run (105.6333ms)
+packages/service test: ✔ a receipt without required evidence cannot be recorded (97.5875ms)
+apps/workbench test: ✔ web skeleton uses synthetic data only (3.824ms)
+apps/workbench test: ✔ the build produces a self-contained browser bundle (619.7164ms)
+apps/workbench test: ℹ tests 2
+apps/workbench test: ℹ suites 0
+apps/workbench test: ℹ pass 2
+apps/workbench test: ℹ fail 0
+apps/workbench test: ℹ cancelled 0
+apps/workbench test: ℹ skipped 0
+apps/workbench test: ℹ todo 0
+apps/workbench test: ℹ duration_ms 1452.7449
+packages/browser-worker test: ✔ submission fails without approval and nothing is sent (541.4444ms)
+apps/workbench test: Done
+packages/browser-worker test: ✔ submit verifies, submits, and lands on the receipt for capture (217.2538ms)
+packages/service test: ✔ the first complete proof: import to receipt with explicit approval (580.3703ms)
+packages/browser-worker test: ✔ a stale approval cannot be used (122.8195ms)
+packages/service test: (node:2792) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+packages/service test: (Use `node --trace-warnings ...` to show where the warning was created)
+packages/service test: ✔ generate_artifacts writes files, records a manifest, and advances the run (260.5549ms)
+packages/service test: ✔ tampered artifacts block progress until regeneration (275.8279ms)
+packages/service test: ✔ a deleted artifact file is reported missing after restart (135.3645ms)
+packages/service test: ✔ repeated generation with unchanged facts produces identical hashes (160.4022ms)
+packages/service test: (node:28636) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+packages/service test: (Use `node --trace-warnings ...` to show where the warning was created)
+packages/service test: ✔ import persists packets and surfaces summaries (109.4059ms)
+packages/service test: ✔ a repeat import creates duplicate-review findings, not silent work (37.3081ms)
+packages/service test: ✔ runs persist and resume identically after a restart (173.3392ms)
+packages/service test: ✔ audit events persist in order with human-readable summaries (39.6964ms)
+packages/service test: ✔ duplicate warnings block progress until an override is recorded (130.9135ms)
+packages/service test: ✔ workflow errors carry stable codes through the service boundary (247.2758ms)
+packages/service test: ✔ a hard-stopped packet stays blocked in the persisted state (18.1256ms)
+packages/service test: ✔ an invalid recipe is refused at startup (11.8457ms)
+packages/browser-worker test: ✔ a used approval cannot be replayed (78.5176ms)
+packages/service test: ✔ the stdio service answers one JSON message per line (1209.2231ms)
+packages/service test: ℹ tests 16
+packages/service test: ℹ suites 0
+packages/service test: ℹ pass 16
+packages/service test: ℹ fail 0
+packages/service test: ℹ cancelled 0
+packages/service test: ℹ skipped 0
+packages/service test: ℹ todo 0
+packages/service test: ℹ duration_ms 1823.2267
+packages/service test: Done
+packages/browser-worker test: ✔ changed evidence invalidates the approval (126.1678ms)
+packages/browser-worker test: ✔ the destination's duplicate rejection surfaces as a finding (94.0762ms)
+packages/browser-worker test: ✔ submit demands the review page and captureReceipt demands the receipt page (39.5456ms)
+packages/browser-worker test: ✔ a worker without an approval verifier cannot submit at all (66.2679ms)
+packages/browser-worker test: ✔ readPage recognizes the claim form with full evidence (343.2625ms)
+packages/browser-worker test: ✔ readPage reports unknown pages and disables mutation guidance (252.5903ms)
+packages/browser-worker test: ✔ the degraded claim form is not recognized (123.2203ms)
+packages/browser-worker test: ✔ showTarget highlights an existing control and reports missing ones (138.4639ms)
+packages/browser-worker test: ✔ matchRecord confirms the right member and blocks the wrong one (146.4568ms)
+packages/browser-worker test: ✔ commands demand a recognized page before acting (50.6034ms)
+packages/browser-worker test: ✔ assistance modes gate commands (48.0387ms)
+packages/browser-worker test: ✔ protocol violations fail without touching the page (38.8425ms)
+packages/browser-worker test: ✔ pause and emergency stop cancel commands (52.3212ms)
+packages/browser-worker test: ✔ diagnostics are off by default and explicit when enabled (89.5717ms)
+packages/browser-worker test: ✔ fillServiceRows fills every row with expected-versus-observed evidence (441.7917ms)
+packages/browser-worker test: ✔ a repeated commandId returns the original result and fills nothing twice (126.3963ms)
+packages/browser-worker test: ✔ a new fill command skips rows that are already observed (110.7674ms)
+packages/browser-worker test: ✔ verifyTotal blocks on a mismatch and passes once rows agree (75.2871ms)
+packages/browser-worker test: ✔ mutation is disabled on unknown pages and in low assistance modes (77.2309ms)
+packages/browser-worker test: ✔ an unknown service line id fails without touching the page (70.5343ms)
+packages/browser-worker test: ✔ uploadArtifact verifies the manifest hash before uploading (93.0705ms)
+packages/browser-worker test: ✔ undoFill removes exactly what this session filled (98.3056ms)
+packages/browser-worker test: ℹ tests 34
+packages/browser-worker test: ℹ suites 0
+packages/browser-worker test: ℹ pass 34
+packages/browser-worker test: ℹ fail 0
+packages/browser-worker test: ℹ cancelled 0
+packages/browser-worker test: ℹ skipped 0
+packages/browser-worker test: ℹ todo 0
+packages/browser-worker test: ℹ duration_ms 2232.4228
+packages/browser-worker test: Done
+== Portable packages: builds ==
+Scope: 4 of 5 workspace projects
+packages/core build$ node scripts/check-sources.mjs
+packages/core build: Checked 22 core source files.
+packages/core build: Done
+apps/workbench build$ node scripts/build.mjs && node --check dist/main.js
+packages/service build$ node --check src/store.js && node --check src/service.js && node --check src/stdio.js && node --check bin/service.js
+packages/browser-worker build$ node scripts/check-sources.mjs
+apps/workbench build: Built C:\Users\14807\Documents\my_git\claim-workbench\apps\workbench\dist\
+apps/workbench build: Done
+packages/service build: Done
+packages/browser-worker build: Checked 6 worker source files.
+packages/browser-worker build: Done
+== Native macOS application: skipped (not macOS) ==
+All verification steps passed.

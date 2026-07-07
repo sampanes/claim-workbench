@@ -1,0 +1,7 @@
+# Pin endings so a Windows checkout cannot break the Mac entry points.
+# (bash on macOS rejects CRLF scripts with cryptic '\r' errors.)
+* text=auto
+*.command text eol=lf
+*.sh text eol=lf
+*.mjs text eol=lf
+*.bat text eol=crlf

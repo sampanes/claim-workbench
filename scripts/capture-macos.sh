@@ -19,6 +19,15 @@ corepack pnpm -r test:coverage 2>&1 | tee out/coverage.txt
 echo "== Verify (tests + builds + macOS app) -> out/verify.txt =="
 bash scripts/verify-macos.sh 2>&1 | tee out/verify.txt
 
+# Scrub machine-identifying paths before anything is committed: absolute paths
+# carry the operator's username (e.g. /Users/<name>/...), which must never
+# reach the public repo. (-i.bak works on both BSD/macOS and GNU sed.)
+echo "== Scrubbing machine paths from captures =="
+for f in out/coverage.txt out/verify.txt docs/STDIO_TRANSCRIPT.md; do
+  [[ -f "$f" ]] || continue
+  sed -i.bak -e "s|$(pwd)|<repo>|g" -e "s|$HOME|<home>|g" "$f" && rm -f "$f.bak"
+done
+
 echo ""
 echo "[OK] Harvest complete. Outputs:"
 echo "  out/coverage.txt         coverage report (per-package line %)"

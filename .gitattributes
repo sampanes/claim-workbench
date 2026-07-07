@@ -1,7 +1,9 @@
 # Pin endings so a Windows checkout cannot break the Mac entry points.
-# (bash on macOS rejects CRLF scripts with cryptic '\r' errors.)
+# (bash on macOS rejects CRLF scripts with cryptic '\r' errors, and a CRLF
+#  `#!/bin/sh` hook yields "bad interpreter: /bin/sh^M".)
 * text=auto
 *.command text eol=lf
 *.sh text eol=lf
 *.mjs text eol=lf
 *.bat text eol=crlf
+scripts/githooks/pre-commit text eol=lf

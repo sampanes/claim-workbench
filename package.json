@@ -11,6 +11,12 @@
     "test": "pnpm -r test",
     "test:coverage": "pnpm -r test:coverage",
     "stdio:transcript": "node scripts/generate-stdio-transcript.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "hooks:install": "node scripts/isolation/install.mjs",
+    "verify:clean": "node scripts/isolation/verify-clean.mjs",
+    "demo:firewall": "node scripts/isolation/demo-firewall.mjs",
+    "rehearse": "node scripts/rehearse.mjs",
+    "run:real": "node scripts/isolation/real-run.mjs",
     "verify": "pnpm test && pnpm build"
   }
 }

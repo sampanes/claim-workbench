@@ -1,0 +1,5 @@
+#!/bin/sh
+# Data-isolation commit firewall. Installed by pointing git at this directory:
+#   git config core.hooksPath scripts/githooks   (run: pnpm hooks:install)
+# Works on macOS and on Windows (git runs hooks under its bundled sh).
+exec node "$(dirname "$0")/../isolation/pre-commit.mjs"

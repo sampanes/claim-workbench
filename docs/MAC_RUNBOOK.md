@@ -16,6 +16,45 @@ order.
 
 ---
 
+## State of the target Mac (as of the 2026-07-07 visit)
+
+What the first hands-on visit **proved** (captured in `out/verify.txt` and
+`out/coverage.txt`):
+
+- The clone exists at `~/Documents/bespoke-billing-tool/claim-workbench` —
+  the next visit starts with `git pull`, **not** a fresh clone.
+- Node + `corepack pnpm` work; the full portable stack is green on macOS:
+  **141/141 tests** (core 89, browser-worker 34, service 16, workbench 2) and
+  every package builds, including the self-contained browser bundle.
+- **Swift builds** (`swift build` on `apps/macos`, 0.11s) via the Command Line
+  Tools — but there is **no full Xcode**, so `swift test`/XCTest cannot run
+  locally. CI on `macos-latest` covers the Swift tests; installing Xcode on
+  the Mac is optional and only matters for Milestone 8 iteration.
+- Git push to `origin/main` works from the Mac.
+
+What has **never run on the target Mac** (the isolation stack landed on `main`
+after the visit), in the order a next visit should knock them out:
+
+1. `git pull` — picks up everything below.
+2. `pnpm install` — new dependency state.
+3. `pnpm hooks:install` — **the firewall has never been armed on that Mac.**
+   Arm it first; every isolation tool refuses to run without it.
+4. `pnpm doctor` — turns the rest of this list into a live green/red board.
+5. `pnpm add -w playwright && pnpm exec playwright install chromium` — the
+   browser download (the unit tests never needed it; the launcher does).
+6. `pnpm rehearse` — proves the one path no other machine can: the browser
+   autofill step (step 4) has only ever been verified by review.
+7. `security add-generic-password -s claim-workbench-portal -a <username> -w`
+   — Keychain entry (section A step 5).
+8. `pnpm run:real --preflight` — writes the config template; fill in the real
+   portal details.
+
+Items 1–6 need **zero real data** — they are a complete non-billing visit on
+their own. Items 7–8 are only worth doing when a real portal session is
+actually planned.
+
+---
+
 ## A. One-time setup (per Mac, ~15 min, no billing needed)
 
 Do this once. `pnpm doctor` turns each line green as you go.

@@ -5,8 +5,10 @@
 //
 //   node scripts/doctor.mjs          # or: pnpm doctor
 //
-// It is READ-ONLY: it diagnoses and never changes anything. It never reads or
-// prints any password — the Keychain check uses existence only.
+// It is READ-ONLY: it diagnoses and never changes anything (the sync check
+// refreshes remote-tracking refs, nothing more — the working tree is never
+// touched). It never reads or prints any password — the Keychain check uses
+// existence only.
 
 import { spawnSync, execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
@@ -27,6 +29,46 @@ function add(label, status, detail, fix) {
 function has(bin, args) {
   const r = spawnSync(bin, args, { encoding: "utf8", shell: process.platform === "win32" });
   return r.status === 0 ? (r.stdout || "").trim() : null;
+}
+
+// 0. Clone freshness — is this checkout current with origin/main? A stale or
+// diverged clone is how a whole Mac visit gets wasted (2026-07-07). The quiet
+// fetch only refreshes remote-tracking refs; the working tree is never touched.
+{
+  const label = "Clone in sync with origin/main";
+  const fetch = spawnSync("git", ["fetch", "--quiet", "origin", "main"], {
+    cwd: REPO,
+    encoding: "utf8",
+    timeout: 15000
+  });
+  if (fetch.status !== 0) {
+    add(label, "warn", "could not reach origin — freshness unknown (offline?)", "Re-run with network, or continue if you know the clone is current.");
+  } else {
+    const count = (range) =>
+      Number(execFileSync("git", ["rev-list", "--count", range], { cwd: REPO, encoding: "utf8" }).trim());
+    let behind = null;
+    let ahead = null;
+    try {
+      behind = count("HEAD..origin/main");
+      ahead = count("origin/main..HEAD");
+    } catch {
+      /* detached/odd state falls through to the diverged advice below */
+    }
+    if (behind === 0 && ahead === 0) {
+      add(label, "ok", "up to date");
+    } else if (behind > 0 && ahead === 0) {
+      add(label, "missing", `behind by ${behind} commit(s)`, "git pull --ff-only");
+    } else if (ahead > 0 && behind === 0) {
+      add(label, "warn", `${ahead} unpushed local commit(s)`, "git push origin main");
+    } else {
+      add(
+        label,
+        "missing",
+        behind === null ? "state unreadable" : `diverged (${behind} behind / ${ahead} ahead) — expected on clones older than the 2026-07 history rewrite`,
+        "git fetch origin && git reset --hard origin/main   (discards local commits — push or copy anything real first)"
+      );
+    }
+  }
 }
 
 // 1. Node

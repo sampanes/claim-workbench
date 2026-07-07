@@ -14,6 +14,19 @@ It prints a green/red board of what's ready and what isn't, and tells you the
 exact command to fix each red line. Everything below is just those commands in
 order.
 
+**Syncing any clone** (works everywhere; required once per machine after the
+2026-07 history rewrite, where plain `git pull` refuses):
+
+```sh
+git fetch origin
+git reset --hard origin/main
+```
+
+⚠️ `reset --hard` discards local commits and edits to tracked files — push or
+copy anything real first. It never touches untracked or gitignored files, so
+the vault (`local-data/` etc.) is safe. Never use `git clean -x` on the Mac;
+*that* would delete the gitignored vault.
+
 ---
 
 ## State of the target Mac (as of the 2026-07-07 visit)
@@ -35,7 +48,8 @@ What the first hands-on visit **proved** (captured in `out/verify.txt` and
 What has **never run on the target Mac** (the isolation stack landed on `main`
 after the visit), in the order a next visit should knock them out:
 
-1. `git pull` — picks up everything below.
+1. Sync the clone (the block above — `git pull` refuses after the history
+   rewrite) — picks up everything below.
 2. `pnpm install` — new dependency state.
 3. `pnpm hooks:install` — **the firewall has never been armed on that Mac.**
    Arm it first; every isolation tool refuses to run without it.
